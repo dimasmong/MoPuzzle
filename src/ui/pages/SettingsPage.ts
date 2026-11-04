@@ -3,6 +3,7 @@ import { Storage } from '../../core/storage';
 import { SoundManager } from '../../audio/SoundManager';
 import { Modal, Toast } from '../components';
 import { Router } from '../router';
+import { Icons } from '../icons';
 
 export function renderSettingsPage(): string {
   const data = Storage.getData();
@@ -95,6 +96,20 @@ export function renderSettingsPage(): string {
           </div>
           <input type="checkbox" id="setting-motion-toggle" ${s.reducedMotion ? 'checked' : ''} style="width: 20px; height: 20px; accent-color: var(--primary-color);">
         </div>
+      </div>
+
+      <!-- About MoPuzzle Card -->
+      <div class="card" id="about-nav-card" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="brand-logo" style="width: 34px; height: 34px;" aria-label="MoPuzzle Logo">
+            ${Icons.logo}
+          </div>
+          <div>
+            <div style="font-size: 14px; font-weight: 700;">${I18n.t('aboutTitle')}</div>
+            <div style="font-size: 11px; color: var(--text-muted);">v1.0.1 — ${I18n.t('tagline')}</div>
+          </div>
+        </div>
+        <div style="color: var(--text-muted); font-size: 18px; font-weight: 700;">›</div>
       </div>
 
       <!-- Data & Storage Reset -->
@@ -202,5 +217,11 @@ export function bindSettingsEvents(container: HTMLElement): void {
       Toast.show(I18n.t('resetConfirmedToast'));
       Router.navigate('home');
     });
+  });
+
+  // Navigate to About
+  container.querySelector('#about-nav-card')?.addEventListener('click', () => {
+    SoundManager.play('click');
+    Router.navigate('about');
   });
 }

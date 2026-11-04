@@ -17,12 +17,48 @@
     <meta property="og:description" content="Play 4 instant browser puzzle games: Merge Numbers, Color Sort, Slide Puzzle, and Block Fit." />
 
     <!-- Favicon & Icons -->
-    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
-    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="/icons/icon.svg?v=1.1.0" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/icons/icon-48.png?v=1.1.0" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png?v=1.1.0" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png?v=1.1.0" />
+    <link rel="shortcut icon" href="/favicon.ico?v=1.1.0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png?v=1.1.0" />
+    <link rel="manifest" href="/manifest.webmanifest?v=1.1.0" />
   </head>
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div id="initial-splash" style="position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#17274E;color:#FFFFFF;z-index:9999;font-family:system-ui,-apple-system,sans-serif;">
+        <div style="width:72px;height:72px;border-radius:18px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.4);">
+          <svg viewBox="0 0 512 512" width="100%" height="100%">
+            <defs>
+              <linearGradient id="spBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#17274E" />
+                <stop offset="50%" stop-color="#243A73" />
+                <stop offset="100%" stop-color="#121F40" />
+              </linearGradient>
+              <linearGradient id="spAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#BAF2FD" />
+                <stop offset="50%" stop-color="#A1E3F9" />
+                <stop offset="100%" stop-color="#55C9EE" />
+              </linearGradient>
+              <linearGradient id="spWhite" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FFFFFF" />
+                <stop offset="100%" stop-color="#E8F6FE" />
+              </linearGradient>
+            </defs>
+            <rect width="512" height="512" rx="114" fill="url(#spBg)" />
+            <rect x="14" y="14" width="484" height="484" rx="100" fill="none" stroke="#A1E3F9" stroke-opacity="0.25" stroke-width="6" />
+            <g>
+              <path d="M 120 114 C 109 114 100 123 100 134 L 100 378 C 100 389 109 398 120 398 L 146 398 C 157 398 166 389 166 378 L 166 250 L 214 332 C 220 342 232 346 242 342 C 248 339 252 334 252 326 L 252 284 C 240 284 230 274 230 262 C 230 240 266 240 266 262 C 266 274 256 284 244 284 L 244 290 L 186 142 C 180 128 166 114 150 114 Z" fill="url(#spWhite)" />
+              <path d="M 264 114 C 252 114 242 124 242 136 L 242 216 C 254 216 264 226 264 238 C 264 260 228 260 228 238 C 228 226 238 216 250 216 L 250 174 L 336 174 C 378 174 412 208 412 250 C 412 292 378 326 336 326 L 316 326 L 366 378 C 374 386 368 398 356 398 L 328 398 C 320 398 312 394 306 388 L 260 338 L 260 378 C 260 389 251 398 240 398 L 224 398 C 216 398 210 392 210 384 Z" fill="url(#spAccent)" />
+              <rect x="306" y="222" width="44" height="56" rx="22" fill="#17274E" />
+            </g>
+          </svg>
+        </div>
+        <div style="margin-top:14px;font-size:18px;font-weight:800;letter-spacing:-0.3px;color:#FFFFFF;">MoPuzzle</div>
+        <div style="font-size:11px;color:#A1E3F9;margin-top:2px;letter-spacing:0.2px;">Think. Solve. Enjoy.</div>
+      </div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

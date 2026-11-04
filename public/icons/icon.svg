@@ -1,44 +1,98 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#243A73" />
-      <stop offset="100%" stop-color="#3B82F6" />
+    <!-- Background Gradient: Deep MoNavy -->
+    <linearGradient id="mpBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#17274E" />
+      <stop offset="50%" stop-color="#243A73" />
+      <stop offset="100%" stop-color="#121F40" />
     </linearGradient>
-    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#A1E3F9" />
-      <stop offset="100%" stop-color="#00BBF9" />
+
+    <!-- Accent Sky Aqua Gradient for P & Right Wing -->
+    <linearGradient id="mpAccentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#BAF2FD" />
+      <stop offset="50%" stop-color="#A1E3F9" />
+      <stop offset="100%" stop-color="#55C9EE" />
     </linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.3" />
+
+    <!-- Frost White Gradient for Left M Wing -->
+    <linearGradient id="mpWhiteGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#E8F6FE" />
+    </linearGradient>
+
+    <!-- Tactile Drop Shadow for Logo Mark -->
+    <filter id="mpShadow" x="-12%" y="-12%" width="124%" height="124%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#050A18" flood-opacity="0.48" />
     </filter>
   </defs>
 
-  <!-- Background rounded rect -->
-  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+  
+  <!-- Squircle Base Tile -->
+  <rect width="512" height="512" rx="114" fill="url(#mpBgGrad)" />
 
-  <!-- Inner subtle border -->
-  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="6" />
+  <!-- Subtle Specular Inner Rim -->
+  <rect x="14" y="14" width="484" height="484" rx="100" fill="none" stroke="#A1E3F9" stroke-opacity="0.22" stroke-width="5" />
+  
 
-  <!-- Puzzle 4-quadrant emblem -->
-  <g transform="translate(106, 106)" filter="url(#shadow)">
-    <!-- Top-Left: Number tile (2048) -->
-    <rect x="0" y="0" width="140" height="140" rx="28" fill="#F2B179" />
-    <text x="70" y="88" font-family="system-ui, -apple-system, sans-serif" font-size="54" font-weight="900" fill="#FFFFFF" text-anchor="middle">2048</text>
+  <!-- Interlocking M + P Puzzle Monogram Emblem -->
+  <g filter="url(#mpShadow)">
+    
+    <!-- PIECE 1: LEFT WING OF M (Frost White) with Interlocking Convex Puzzle Tab -->
+    <!-- 
+      - Left Pillar: X from 100 to 156, Y from 114 to 398
+      - Diagonal: Slopes down to center junction
+      - Puzzle Tab: Authentic circular jigsaw knob centered at X: 248, Y: 256
+    -->
+    <path d="
+      M 120 114
+      C 109 114 100 123 100 134
+      L 100 378
+      C 100 389 109 398 120 398
+      L 146 398
+      C 157 398 166 389 166 378
+      L 166 250
+      L 214 332
+      C 220 342 232 346 242 342
+      C 248 339 252 334 252 326
+      L 252 284
+      C 240 284 230 274 230 262
+      C 230 240 266 240 266 262
+      C 266 274 256 284 244 284
+      L 244 290
+      L 186 142
+      C 180 128 166 114 150 114
+      Z" fill="url(#mpWhiteGrad)" />
 
-    <!-- Top-Right: Liquid Flask/Tube -->
-    <rect x="160" y="0" width="140" height="140" rx="28" fill="#FFFFFF" fill-opacity="0.15" stroke="#FFFFFF" stroke-width="4" />
-    <path d="M190 28 L270 28 L270 102 C270 124 252 132 230 132 C208 132 190 124 190 102 Z" fill="url(#accentGrad)" />
+    <!-- PIECE 2: P-LOOP & RIGHT WING OF M (Electric Sky Aqua) with Interlocking Socket -->
+    <!-- 
+      - Center Stem: Matches puzzle socket at Y: 262
+      - P Loop: Arches rightward to X: 412, Y: 114 to 326
+      - Right Leg of M: Extends to bottom at X: 356, Y: 398
+    -->
+    <path d="
+      M 264 114
+      C 252 114 242 124 242 136
+      L 242 216
+      C 254 216 264 226 264 238
+      C 264 260 228 260 228 238
+      C 228 226 238 216 250 216
+      L 250 174
+      L 336 174
+      C 378 174 412 208 412 250
+      C 412 292 378 326 336 326
+      L 316 326
+      L 366 378
+      C 374 386 368 398 356 398
+      L 328 398
+      C 320 398 312 394 306 388
+      L 260 338
+      L 260 378
+      C 260 389 251 398 240 398
+      L 224 398
+      C 216 398 210 392 210 384
+      Z" fill="url(#mpAccentGrad)" />
 
-    <!-- Bottom-Left: Sliding tile -->
-    <rect x="0" y="160" width="140" height="140" rx="28" fill="#06D6A0" />
-    <path d="M40 230 L100 230 M70 200 L100 230 L70 260" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
-
-    <!-- Bottom-Right: Block Fit Polyomino -->
-    <rect x="160" y="160" width="140" height="140" rx="28" fill="#8338EC" />
-    <g transform="translate(178, 178)" fill="#FFFFFF" fill-opacity="0.9">
-      <rect x="0" y="0" width="46" height="46" rx="8" />
-      <rect x="52" y="0" width="46" height="46" rx="8" />
-      <rect x="0" y="52" width="46" height="46" rx="8" />
-    </g>
+    <!-- Negative Space Counter inside P -->
+    <rect x="306" y="222" width="44" height="56" rx="22" fill="#17274E" />
   </g>
 </svg>

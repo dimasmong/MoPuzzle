@@ -1,11 +1,16 @@
-const CACHE_NAME = 'mopuzzle-cache-v1.0.0';
+const CACHE_NAME = 'mopuzzle-cache-v1.1.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.webmanifest',
+  '/favicon.ico',
   '/icons/icon.svg',
+  '/icons/icon-16.png',
+  '/icons/icon-32.png',
+  '/icons/icon-48.png',
   '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/icons/icon-512.png',
+  '/icons/apple-touch-icon.png'
 ];
 
 // Install event: cache static assets

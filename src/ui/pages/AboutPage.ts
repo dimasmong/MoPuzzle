@@ -18,7 +18,9 @@ export function renderAboutPage(): string {
 
       <div class="card">
         <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px;">
-          <div class="brand-logo" style="width: 52px; height: 52px; font-size: 26px;">M</div>
+          <div class="brand-logo" style="width: 52px; height: 52px;" aria-label="MoPuzzle Logo" title="MoPuzzle">
+            ${Icons.logo}
+          </div>
           <div>
             <h3 style="font-size: 18px; font-weight: 800;">MoPuzzle</h3>
             <span style="font-size: 12px; font-weight: 700; background: var(--accent-color); color: #0D1B2A; padding: 2px 8px; border-radius: var(--radius-full);">

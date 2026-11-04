@@ -85,7 +85,9 @@ export function renderHeader(): string {
   return `
     <header class="app-header">
       <div class="brand" id="brand-nav">
-        <div class="brand-logo">M</div>
+        <div class="brand-logo" aria-label="MoPuzzle Logo" title="MoPuzzle">
+          ${Icons.logo}
+        </div>
         <div class="brand-text">
           <h1>${I18n.t('appName')}</h1>
           <p>${I18n.t('tagline')}</p>
