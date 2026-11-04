@@ -142,4 +142,45 @@ describe('MergeEngine', () => {
     expect(restoredEngine.score).toBe(512);
     expect(restoredEngine.moves).toBe(25);
   });
+
+  it('allows continuing after 2048 milestone without repeated win events', () => {
+    engine.board = [
+      [1024, 1024, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0],
+      [0, 0, 0, 0]
+    ];
+
+    const winResult = engine.move('left');
+    expect(winResult.won).toBe(true);
+
+    // Player clicks "Keep Going"
+    engine.continueAfterWin();
+    expect(engine.hasContinuedAfterWin).toBe(true);
+
+    // Next move does not report won: true again
+    const nextResult = engine.move('down');
+    if (nextResult.moved) {
+      expect(nextResult.won).toBe(false);
+    }
+  });
+
+  it('does not resume a gameOver savedState and starts fresh instead', () => {
+    const deadState = {
+      board: [
+        [2, 4, 2, 4],
+        [4, 2, 4, 2],
+        [2, 4, 2, 4],
+        [4, 2, 4, 2]
+      ],
+      score: 1000,
+      moves: 50,
+      gameOver: true
+    };
+
+    const freshEngine = new MergeEngine('classic', deadState);
+    expect(freshEngine.gameOver).toBe(false);
+    expect(freshEngine.score).toBe(0);
+    expect(freshEngine.moves).toBe(0);
+  });
 });

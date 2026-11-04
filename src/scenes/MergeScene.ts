@@ -42,9 +42,13 @@ export class MergeScene extends Phaser.Scene {
   public init(data: { mode?: 'classic' | 'timed'; onStateChange?: (state: any) => void } = {}) {
     this.onStateChange = data?.onStateChange || GameLauncher.onStateChangeCallback || undefined;
     const saved = Storage.getActiveGame<any>('merge');
-    const mode = data?.mode || GameLauncher.currentDifficulty || (saved?.mode ?? 'classic');
-    this.engine = new MergeEngine(mode, saved);
+    const requestedMode = data?.mode || GameLauncher.currentDifficulty || (saved && !saved.gameOver ? saved.mode : 'classic');
+    const validSaved = (saved && !saved.gameOver && (saved.mode === undefined || saved.mode === requestedMode)) ? saved : undefined;
+    this.engine = new MergeEngine(requestedMode, validSaved);
     Stats.recordGameStart('merge');
+    if (!validSaved) {
+      Storage.saveActiveGame('merge', this.engine.serialize());
+    }
   }
 
   public create(): void {
@@ -164,11 +168,20 @@ export class MergeScene extends Phaser.Scene {
       SoundManager.play('victory');
       Stats.recordVictory('merge');
       Achievements.triggerUnlock('merge_2048');
+      Storage.saveActiveGame('merge', this.engine.serialize());
     } else if (result.gameOver) {
       SoundManager.play('gameover');
+      Storage.clearActiveGame('merge');
+    } else {
+      Storage.saveActiveGame('merge', this.engine.serialize());
     }
 
     this.renderBoard(true);
+    this.notifyState();
+  }
+
+  public continueAfterWin(): void {
+    this.engine.continueAfterWin();
     Storage.saveActiveGame('merge', this.engine.serialize());
     this.notifyState();
   }
@@ -241,7 +254,7 @@ export class MergeScene extends Phaser.Scene {
       this.onStateChange({
         score: this.engine.score,
         moves: this.engine.moves,
-        won: this.engine.won,
+        won: this.engine.won && !this.engine.hasContinuedAfterWin,
         gameOver: this.engine.gameOver,
         canUndo: this.engine.canUndo(),
         timeRemaining: this.engine.timeRemaining,

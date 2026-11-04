@@ -17,7 +17,7 @@ export class SlideEngine {
 
   constructor(size: SlideBoardSize = 4, savedState?: any) {
     this.size = size;
-    if (savedState && savedState.tiles && Array.isArray(savedState.tiles) && savedState.tiles.length === size * size) {
+    if (savedState && savedState.tiles && Array.isArray(savedState.tiles) && savedState.tiles.length === size * size && !savedState.won && (savedState.size === undefined || savedState.size === size)) {
       this.size = savedState.size ?? size;
       this.tiles = [...savedState.tiles];
       this.moves = savedState.moves ?? 0;
@@ -181,7 +181,8 @@ export class SlideEngine {
       size: this.size,
       tiles: [...this.tiles],
       moves: this.moves,
-      elapsedSeconds: this.elapsedSeconds
+      elapsedSeconds: this.elapsedSeconds,
+      won: this.won
     };
   }
 }

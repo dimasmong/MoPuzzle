@@ -127,4 +127,39 @@ describe('ColorSortEngine', () => {
     const hint = ColorSortEngine.solveBFS(generated, 4, 1500);
     expect(hint).not.toBeNull();
   });
+
+  it('rejects stale won savedState when requested level is new or won', () => {
+    const wonSavedState = {
+      level: 1,
+      won: true,
+      moves: 8,
+      tubeCapacity: 4,
+      tubes: [[1, 1, 1, 1], [2, 2, 2, 2], []]
+    };
+
+    // Advancing to level 2 with level 1 won saved state must load fresh level 2
+    const level2Engine = new ColorSortEngine(2, wonSavedState);
+    expect(level2Engine.level).toBe(2);
+    expect(level2Engine.won).toBe(false);
+    expect(level2Engine.moves).toBe(0);
+
+    // Starting level 1 again with won state must also load fresh level 1
+    const freshLevel1 = new ColorSortEngine(1, wonSavedState);
+    expect(freshLevel1.level).toBe(1);
+    expect(freshLevel1.won).toBe(false);
+    expect(freshLevel1.moves).toBe(0);
+  });
+
+  it('correctly loads all 30 progressive levels without overflow or crashing', () => {
+    for (let lvl = 1; lvl <= 30; lvl++) {
+      engine.loadLevel(lvl);
+      expect(engine.level).toBe(lvl);
+      expect(engine.moves).toBe(0);
+      expect(engine.won).toBe(false);
+      expect(engine.tubes.length).toBeGreaterThanOrEqual(5);
+      // Ensure there is at least one empty tube available to begin solving
+      const emptyTubes = engine.tubes.filter(t => t.length === 0);
+      expect(emptyTubes.length).toBeGreaterThanOrEqual(1);
+    }
+  });
 });

@@ -8,7 +8,8 @@ import { GameMode } from '../../core/types';
 export function renderDetailsPage(mode: GameMode = 'merge'): string {
   const data = Storage.getData();
   const stats = data.stats[mode];
-  const hasActive = !!data.activeGames[mode];
+  const activeGame = data.activeGames[mode];
+  const hasActive = !!activeGame && !activeGame.won && !activeGame.gameOver;
 
   let difficultyHtml = '';
   if (mode === 'merge') {

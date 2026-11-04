@@ -5,6 +5,40 @@ All notable changes to **MoPuzzle** will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.2] - 2026-11-05
+
+### Fixed
+- **Color Sort Level Progression**:
+  - Fixed critical bug where clicking "Next Level" on the victory modal failed to advance the game due to active game state preserving the completed board.
+  - Added clean `advanceToNextLevel()` progression transaction that increments level, loads a new solvable configuration, resets moves/undo, and immediately renders without requiring a page reload.
+  - Implemented campaign completion handling for Level 30 with dedicated congratulatory screen and level selection navigation.
+  - Ensured all 30 progressive levels generate with at least one buffer empty tube and verified BFS solvable paths.
+- **Slide Puzzle Victory Flow**:
+  - Replaced ambiguous "Play Again" with "Next Puzzle" action that generates a fresh solvable scramble of the current board size.
+  - Fixed stopwatch timer to halt immediately upon victory and restart cleanly on subsequent puzzles.
+- **Merge Numbers 2048 Milestone**:
+  - Added "Keep Going" continuation action on the 2048 victory modal to resume playing the current board without re-triggering the victory modal on every move.
+  - Added "New Game" button to easily start fresh from the victory screen.
+- **Block Fit Game Over**:
+  - Fixed "Retry" button on game over modal to reset 10×10 board, spawn 3 new pieces, reset score and combo streak, while preserving all-time high score.
+  - Prevented game over boards from being stored as resumable active games.
+- **Navigation & Modals**:
+  - Audited and secured all modal buttons (Home, Next Level, Next Puzzle, Keep Going, Retry, Restart, Settings) across desktop and mobile devices.
+  - Upgraded Playwright regression suite to 96 end-to-end tests covering all four puzzle modes and level progression flows.
+
+## [1.0.1] - 2026-11-05
+
+### Fixed
+- **Block Fit Drag-and-Drop & Sizing**:
+  - Resolved piece sizing mismatch (enforced 1:1 scale during dragging to match board grid cells exactly).
+  - Unified drag preview and placement coordinate calculations to eliminate offsets.
+  - Added responsive grid dimensions supporting viewports from 360px mobile to 1440px desktop.
+
+### Added
+- **Puzzle Fusion Brand Emblem**:
+  - Brand-new geometric logo integrating visual elements from all four puzzle modes.
+  - Multi-resolution icon exports (16, 32, 48, 180, 192, 512px) and vector favicon.
+
 ## [1.0.0] - 2026-11-05
 
 ### Added

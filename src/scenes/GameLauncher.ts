@@ -118,6 +118,21 @@ export class GameLauncher {
     }
   }
 
+  public static nextLevel(): boolean {
+    if (this.currentScene && typeof (this.currentScene as any).advanceToNextLevel === 'function') {
+      return (this.currentScene as any).advanceToNextLevel();
+    }
+    return false;
+  }
+
+  public static continuePlaying(): boolean {
+    if (this.currentScene && typeof (this.currentScene as any).continueAfterWin === 'function') {
+      (this.currentScene as any).continueAfterWin();
+      return true;
+    }
+    return false;
+  }
+
   public static hint(): any {
     if (this.currentScene && typeof (this.currentScene as any).showHint === 'function') {
       return (this.currentScene as any).showHint();

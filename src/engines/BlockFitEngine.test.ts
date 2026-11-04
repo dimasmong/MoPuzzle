@@ -252,4 +252,21 @@ describe('BlockFitEngine', () => {
     expect(resumedEngine.grid[9][9]).toBe('#00FF00');
     expect(resumedEngine.currentPieces[0].used).toBe(true);
   });
+
+  it('does not resume a gameOver savedState and starts fresh with 3 pieces', () => {
+    const deadState = {
+      grid: Array.from({ length: 10 }, () => Array(10).fill('#FF0000')),
+      score: 850,
+      comboStreak: 0,
+      gameOver: true,
+      currentPieces: []
+    };
+
+    const freshEngine = new BlockFitEngine(deadState);
+    expect(freshEngine.gameOver).toBe(false);
+    expect(freshEngine.score).toBe(0);
+    expect(freshEngine.currentPieces.length).toBe(3);
+    // Grid must be empty
+    expect(freshEngine.grid.every(row => row.every(cell => cell === null))).toBe(true);
+  });
 });

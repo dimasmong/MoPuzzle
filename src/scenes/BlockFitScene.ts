@@ -39,8 +39,12 @@ export class BlockFitScene extends Phaser.Scene {
   public init(data: { onStateChange?: (state: any) => void } = {}): void {
     this.onStateChange = data?.onStateChange || GameLauncher.onStateChangeCallback || undefined;
     const saved = Storage.getActiveGame<any>('blockfit');
-    this.engine = new BlockFitEngine(saved);
+    const validSaved = (saved && !saved.gameOver) ? saved : undefined;
+    this.engine = new BlockFitEngine(validSaved);
     Stats.recordGameStart('blockfit');
+    if (!validSaved) {
+      Storage.saveActiveGame('blockfit', this.engine.serialize());
+    }
   }
 
   public create(): void {
@@ -515,6 +519,9 @@ export class BlockFitScene extends Phaser.Scene {
 
     if (result.gameOver) {
       SoundManager.play('gameover');
+      Storage.clearActiveGame('blockfit');
+    } else {
+      Storage.saveActiveGame('blockfit', this.engine.serialize());
     }
 
     this.selectedPieceIndex = null;
@@ -522,7 +529,6 @@ export class BlockFitScene extends Phaser.Scene {
     this.renderBoardBlocks();
     this.renderShelfPieces();
 
-    Storage.saveActiveGame('blockfit', this.engine.serialize());
     this.notifyState();
   }
 

@@ -50,10 +50,13 @@ export interface SaveDataSchema {
     merge?: {
       board: number[][];
       score: number;
-      bestScore: number;
+      bestScore?: number;
       moves: number;
       mode: 'classic' | 'timed';
       timeRemaining?: number;
+      won?: boolean;
+      gameOver?: boolean;
+      hasContinuedAfterWin?: boolean;
       history: { board: number[][]; score: number }[];
     };
     colorsort?: {
@@ -61,6 +64,8 @@ export interface SaveDataSchema {
       tubes: number[][];
       tubeCapacity: number;
       moves: number;
+      won?: boolean;
+      gameOver?: boolean;
       history: number[][][];
     };
     slide?: {
@@ -68,13 +73,17 @@ export interface SaveDataSchema {
       tiles: number[];
       moves: number;
       elapsedSeconds: number;
+      won?: boolean;
+      gameOver?: boolean;
     };
     blockfit?: {
-      grid: number[][];
+      grid: (string | null)[][] | number[][];
       score: number;
-      highScore: number;
-      currentPieces: { id: string; matrix: number[][]; color: string; used: boolean }[];
+      highScore?: number;
       comboStreak: number;
+      won?: boolean;
+      gameOver?: boolean;
+      currentPieces: { id: string; name?: string; matrix: number[][]; color: string; used: boolean }[];
     };
   };
 }

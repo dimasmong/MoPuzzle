@@ -11,10 +11,11 @@ export function renderHomePage(): string {
 
   // Check if any game is in progress for Continue Playing banner
   let continueMode: GameMode | null = null;
-  if (activeGames.merge) continueMode = 'merge';
-  else if (activeGames.colorsort) continueMode = 'colorsort';
-  else if (activeGames.slide) continueMode = 'slide';
-  else if (activeGames.blockfit) continueMode = 'blockfit';
+  const isGameActive = (g: any) => g && !g.won && !g.gameOver;
+  if (isGameActive(activeGames.merge)) continueMode = 'merge';
+  else if (isGameActive(activeGames.colorsort)) continueMode = 'colorsort';
+  else if (isGameActive(activeGames.slide)) continueMode = 'slide';
+  else if (isGameActive(activeGames.blockfit)) continueMode = 'blockfit';
 
   const continueBanner = continueMode ? `
     <div class="card" style="background: linear-gradient(135deg, rgba(36, 58, 115, 0.95), rgba(58, 134, 255, 0.9)); color: #FFFFFF; display: flex; justify-content: space-between; align-items: center;">
@@ -139,10 +140,11 @@ export function bindHomePageEvents(container: HTMLElement): void {
   container.querySelector('#continue-game-btn')?.addEventListener('click', () => {
     SoundManager.play('click');
     const data = Storage.getData();
-    if (data.activeGames.merge) Router.navigate('play', { mode: 'merge' });
-    else if (data.activeGames.colorsort) Router.navigate('play', { mode: 'colorsort' });
-    else if (data.activeGames.slide) Router.navigate('play', { mode: 'slide' });
-    else if (data.activeGames.blockfit) Router.navigate('play', { mode: 'blockfit' });
+    const isGameActive = (g: any) => g && !g.won && !g.gameOver;
+    if (isGameActive(data.activeGames.merge)) Router.navigate('play', { mode: 'merge', difficulty: data.activeGames.merge?.mode });
+    else if (isGameActive(data.activeGames.colorsort)) Router.navigate('play', { mode: 'colorsort', difficulty: data.activeGames.colorsort?.level });
+    else if (isGameActive(data.activeGames.slide)) Router.navigate('play', { mode: 'slide', difficulty: data.activeGames.slide?.size });
+    else if (isGameActive(data.activeGames.blockfit)) Router.navigate('play', { mode: 'blockfit' });
   });
 
   container.querySelectorAll('[data-mode]').forEach(el => {

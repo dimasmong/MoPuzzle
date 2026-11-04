@@ -199,6 +199,17 @@ export function bindGameplayPageEvents(container: HTMLElement, mode: GameMode, d
       const levelEl = container.querySelector('#hud-level');
       if (levelEl && state.level !== undefined) levelEl.textContent = String(state.level);
 
+      const levelBadge = container.querySelector('.game-mode-badge');
+      if (levelBadge && state.level !== undefined && mode === 'colorsort') {
+        levelBadge.textContent = `${I18n.t('level')} ${state.level}`;
+      }
+
+      const undoBtn = container.querySelector('#game-undo-btn') as HTMLButtonElement;
+      if (undoBtn && state.canUndo !== undefined) {
+        undoBtn.disabled = !state.canUndo;
+        undoBtn.style.opacity = state.canUndo ? '1' : '0.5';
+      }
+
       const bestEl = container.querySelector('#hud-best');
       if (bestEl) {
         const hs = Storage.getData().stats[mode].highScore;
@@ -223,39 +234,121 @@ export function bindGameplayPageEvents(container: HTMLElement, mode: GameMode, d
 }
 
 function showVictoryModal(mode: GameMode, state: any): void {
-  const content = `
-    <div class="result-banner">
-      <div class="result-icon">🏆</div>
-      <h3 class="result-title">${I18n.t('victory')}</h3>
-      <p class="result-desc">${I18n.t('victoryDesc')}</p>
-      ${state.score ? `<div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">${I18n.t('score')}: ${state.score}</div>` : ''}
-      ${state.moves ? `<div style="font-size: 14px; color: var(--text-muted);">${I18n.t('moves')}: ${state.moves}</div>` : ''}
-    </div>
-  `;
+  // Prevent duplicate modals if already open
+  if (document.getElementById('active-modal')) {
+    return;
+  }
 
-  const actions = `
-    <button class="btn btn-secondary" id="modal-victory-home">
-      ${Icons.home}
-      <span>${I18n.t('home')}</span>
-    </button>
-    ${mode === 'colorsort' ? `
-      <button class="btn btn-primary" id="modal-next-level">
-        ${Icons.play}
-        <span>${I18n.t('nextLevel')}</span>
+  let title = I18n.t('victory');
+  let desc = I18n.t('victoryDesc');
+  let icon = '🏆';
+  let detailsHtml = '';
+  let actions = '';
+
+  if (mode === 'colorsort') {
+    const isCampaignEnd = (state.level || 1) >= 30;
+    if (isCampaignEnd) {
+      title = I18n.t('campaignComplete');
+      desc = I18n.t('campaignCompleteDesc');
+      icon = '🌟';
+    }
+    detailsHtml = `
+      <div style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">${I18n.t('level')}: ${state.level || 1}</div>
+      ${state.moves !== undefined ? `<div style="font-size: 14px; color: var(--text-muted);">${I18n.t('moves')}: ${state.moves}</div>` : ''}
+    `;
+
+    actions = `
+      <button class="btn btn-secondary" id="modal-victory-home">
+        ${Icons.home}
+        <span>${I18n.t('home')}</span>
       </button>
-    ` : `
+      ${isCampaignEnd ? `
+        <button class="btn btn-secondary" id="modal-select-level">
+          ${Icons.settings}
+          <span>${I18n.t('levelSelect')}</span>
+        </button>
+        <button class="btn btn-primary" id="modal-play-again">
+          ${Icons.restart}
+          <span>${I18n.t('playAgain')}</span>
+        </button>
+      ` : `
+        <button class="btn btn-primary" id="modal-next-level">
+          ${Icons.play}
+          <span>${I18n.t('nextLevel')}</span>
+        </button>
+      `}
+    `;
+  } else if (mode === 'slide') {
+    detailsHtml = `
+      ${state.moves !== undefined ? `<div style="font-size: 14px; font-weight: 700; margin-bottom: 4px;">${I18n.t('moves')}: ${state.moves}</div>` : ''}
+      ${state.elapsedSeconds !== undefined ? `<div style="font-size: 14px; color: var(--text-muted); margin-bottom: 4px;">${I18n.t('time')}: ${formatTime(state.elapsedSeconds)}</div>` : ''}
+      ${state.bestTime ? `<div style="font-size: 12px; color: var(--primary-color);">${I18n.t('bestTime')}: ${formatTime(state.bestTime)}</div>` : ''}
+    `;
+
+    actions = `
+      <button class="btn btn-secondary" id="modal-victory-home">
+        ${Icons.home}
+        <span>${I18n.t('home')}</span>
+      </button>
+      <button class="btn btn-primary" id="modal-next-puzzle">
+        ${Icons.play}
+        <span>${I18n.t('nextPuzzle')}</span>
+      </button>
+    `;
+  } else if (mode === 'merge') {
+    title = '2048!';
+    desc = I18n.t('victoryDesc');
+    detailsHtml = `
+      ${state.score !== undefined ? `<div style="font-size: 18px; font-weight: 800; color: var(--primary-color); margin-bottom: 6px;">${I18n.t('score')}: ${state.score}</div>` : ''}
+      ${state.moves !== undefined ? `<div style="font-size: 14px; color: var(--text-muted);">${I18n.t('moves')}: ${state.moves}</div>` : ''}
+    `;
+
+    actions = `
+      <button class="btn btn-secondary" id="modal-victory-home">
+        ${Icons.home}
+        <span>${I18n.t('home')}</span>
+      </button>
+      <button class="btn btn-secondary" id="modal-merge-restart">
+        ${Icons.restart}
+        <span>${I18n.t('newGame')}</span>
+      </button>
+      <button class="btn btn-primary" id="modal-merge-continue">
+        ${Icons.play}
+        <span>${I18n.t('continuePlaying')}</span>
+      </button>
+    `;
+  } else {
+    detailsHtml = `
+      ${state.score !== undefined ? `<div style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">${I18n.t('score')}: ${state.score}</div>` : ''}
+      ${state.moves !== undefined ? `<div style="font-size: 14px; color: var(--text-muted);">${I18n.t('moves')}: ${state.moves}</div>` : ''}
+    `;
+    actions = `
+      <button class="btn btn-secondary" id="modal-victory-home">
+        ${Icons.home}
+        <span>${I18n.t('home')}</span>
+      </button>
       <button class="btn btn-primary" id="modal-play-again">
         ${Icons.restart}
         <span>${I18n.t('playAgain')}</span>
       </button>
-    `}
+    `;
+  }
+
+  const content = `
+    <div class="result-banner">
+      <div class="result-icon">${icon}</div>
+      <h3 class="result-title">${title}</h3>
+      <p class="result-desc">${desc}</p>
+      ${detailsHtml}
+    </div>
   `;
 
-  const modalEl = Modal.open(I18n.t('victory'), content, actions);
+  const modalEl = Modal.open(title, content, actions);
 
   modalEl.querySelector('#modal-victory-home')?.addEventListener('click', () => {
     SoundManager.play('click');
     Modal.close();
+    Storage.clearActiveGame(mode);
     GameLauncher.destroy();
     Router.navigate('home');
   });
@@ -263,9 +356,43 @@ function showVictoryModal(mode: GameMode, state: any): void {
   modalEl.querySelector('#modal-next-level')?.addEventListener('click', () => {
     SoundManager.play('click');
     Modal.close();
-    const nextLvl = (state.level || 1) + 1;
+    const advanced = GameLauncher.nextLevel();
+    if (!advanced) {
+      const nextLvl = (state.level || 1) + 1;
+      if (nextLvl > 30) {
+        Router.navigate('levelselect');
+        return;
+      }
+      Storage.clearActiveGame('colorsort');
+      GameLauncher.destroy();
+      Router.navigate('play', { mode: 'colorsort', difficulty: nextLvl });
+    }
+  });
+
+  modalEl.querySelector('#modal-select-level')?.addEventListener('click', () => {
+    SoundManager.play('click');
+    Modal.close();
+    Storage.clearActiveGame('colorsort');
     GameLauncher.destroy();
-    Router.navigate('play', { mode: 'colorsort', difficulty: nextLvl });
+    Router.navigate('levelselect');
+  });
+
+  modalEl.querySelector('#modal-next-puzzle')?.addEventListener('click', () => {
+    SoundManager.play('click');
+    Modal.close();
+    GameLauncher.restart();
+  });
+
+  modalEl.querySelector('#modal-merge-restart')?.addEventListener('click', () => {
+    SoundManager.play('click');
+    Modal.close();
+    GameLauncher.restart();
+  });
+
+  modalEl.querySelector('#modal-merge-continue')?.addEventListener('click', () => {
+    SoundManager.play('click');
+    Modal.close();
+    GameLauncher.continuePlaying();
   });
 
   modalEl.querySelector('#modal-play-again')?.addEventListener('click', () => {
@@ -275,13 +402,18 @@ function showVictoryModal(mode: GameMode, state: any): void {
   });
 }
 
-function showGameOverModal(_mode: GameMode, state: any): void {
+function showGameOverModal(mode: GameMode, state: any): void {
+  // Prevent duplicate modals if already open
+  if (document.getElementById('active-modal')) {
+    return;
+  }
+
   const content = `
     <div class="result-banner">
       <div class="result-icon">💥</div>
       <h3 class="result-title">${I18n.t('gameOver')}</h3>
       <p class="result-desc">${I18n.t('gameOverDesc')}</p>
-      ${state.score ? `<div style="font-size: 18px; font-weight: 800; color: var(--primary-color);">${I18n.t('score')}: ${state.score}</div>` : ''}
+      ${state.score !== undefined ? `<div style="font-size: 18px; font-weight: 800; color: var(--primary-color);">${I18n.t('score')}: ${state.score}</div>` : ''}
     </div>
   `;
 
@@ -301,6 +433,7 @@ function showGameOverModal(_mode: GameMode, state: any): void {
   modalEl.querySelector('#modal-over-home')?.addEventListener('click', () => {
     SoundManager.play('click');
     Modal.close();
+    Storage.clearActiveGame(mode);
     GameLauncher.destroy();
     Router.navigate('home');
   });

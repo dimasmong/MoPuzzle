@@ -101,4 +101,27 @@ describe('SlideEngine', () => {
       expect(new Set(scrambled).size).toBe(9);
     }
   });
+
+  it('supports 5x5 board size correctly', () => {
+    const engine5 = new SlideEngine(5);
+    expect(engine5.tiles.length).toBe(25);
+    expect(new Set(engine5.tiles).size).toBe(25);
+    expect(engine5.checkWin()).toBe(false);
+  });
+
+  it('rejects won savedState and generates fresh scramble on reload', () => {
+    const wonState = {
+      size: 3,
+      tiles: [1, 2, 3, 4, 5, 6, 7, 8, 0],
+      moves: 12,
+      elapsedSeconds: 30,
+      won: true
+    };
+
+    const freshEngine = new SlideEngine(3, wonState);
+    expect(freshEngine.won).toBe(false);
+    expect(freshEngine.moves).toBe(0);
+    expect(freshEngine.elapsedSeconds).toBe(0);
+    expect(freshEngine.checkWin()).toBe(false);
+  });
 });

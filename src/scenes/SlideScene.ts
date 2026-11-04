@@ -26,9 +26,13 @@ export class SlideScene extends Phaser.Scene {
   public init(data: { size?: SlideBoardSize; onStateChange?: (state: any) => void } = {}) {
     this.onStateChange = data?.onStateChange || GameLauncher.onStateChangeCallback || undefined;
     const saved = Storage.getActiveGame<any>('slide');
-    const size = data?.size || GameLauncher.currentDifficulty || (saved?.size ?? 4);
-    this.engine = new SlideEngine(size, saved);
+    const requestedSize = data?.size || GameLauncher.currentDifficulty || (saved && !saved.won ? saved.size : 4);
+    const validSaved = (saved && !saved.won && (saved.size === undefined || saved.size === requestedSize)) ? saved : undefined;
+    this.engine = new SlideEngine(requestedSize, validSaved);
     Stats.recordGameStart('slide');
+    if (!validSaved) {
+      Storage.saveActiveGame('slide', this.engine.serialize());
+    }
   }
 
   public create(): void {
@@ -196,18 +200,22 @@ export class SlideScene extends Phaser.Scene {
           this.isSliding = false;
           if (won) {
             this.handleVictory();
+          } else {
+            Storage.saveActiveGame('slide', this.engine.serialize());
+            this.notifyState();
           }
         }
       });
     } else {
       this.isSliding = false;
     }
-
-    Storage.saveActiveGame('slide', this.engine.serialize());
-    this.notifyState();
   }
 
   private handleVictory(): void {
+    if (this.timerEvent) {
+      this.timerEvent.destroy();
+      this.timerEvent = undefined;
+    }
     SoundManager.play('victory');
     Stats.recordVictory('slide', this.engine.elapsedSeconds);
     Achievements.triggerUnlock('first_step');
@@ -224,12 +232,26 @@ export class SlideScene extends Phaser.Scene {
       origin: { y: 0.6 }
     });
 
+    Storage.clearActiveGame('slide');
     this.notifyState();
   }
 
   public restartGame(): void {
     this.engine.restart();
     SoundManager.play('click');
+    if (this.timerEvent) {
+      this.timerEvent.destroy();
+    }
+    this.timerEvent = this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        if (!this.engine.won) {
+          this.engine.elapsedSeconds++;
+          this.notifyState();
+        }
+      },
+      loop: true
+    });
     this.renderTiles(true);
     Storage.saveActiveGame('slide', this.engine.serialize());
     this.notifyState();
@@ -237,9 +259,11 @@ export class SlideScene extends Phaser.Scene {
 
   private notifyState(): void {
     if (this.onStateChange) {
+      const stats = Storage.getData().stats.slide;
       this.onStateChange({
         moves: this.engine.moves,
         elapsedSeconds: this.engine.elapsedSeconds,
+        bestTime: stats.bestTimeSeconds,
         won: this.engine.won,
         size: this.engine.size
       });

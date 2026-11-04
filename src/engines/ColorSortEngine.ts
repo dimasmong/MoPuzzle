@@ -38,7 +38,7 @@ export class ColorSortEngine {
 
   constructor(level = 1, savedState?: any) {
     this.level = level;
-    if (savedState && savedState.tubes && Array.isArray(savedState.tubes)) {
+    if (savedState && savedState.tubes && Array.isArray(savedState.tubes) && !savedState.won && (savedState.level === undefined || savedState.level === level)) {
       this.level = savedState.level ?? level;
       this.tubeCapacity = savedState.tubeCapacity ?? 4;
       this.tubes = savedState.tubes.map((t: number[]) => [...t]);
@@ -251,7 +251,10 @@ export class ColorSortEngine {
         lastTo = choice.to;
       }
 
-      // 3. Verify it is not already solved and has at least one legal forward move
+      // 3. Verify it is not already solved and has at least 1 empty buffer tube
+      const emptyTubesCount = tubes.filter(t => t.length === 0).length;
+      if (emptyTubesCount < 1) continue;
+
       const isAlreadySolved = tubes.every(t => t.length === 0 || (t.length === capacity && t.every(c => c === t[0])));
       if (isAlreadySolved) continue;
 
@@ -383,7 +386,8 @@ export class ColorSortEngine {
       tubeCapacity: this.tubeCapacity,
       tubes: this.tubes.map(t => [...t]),
       moves: this.moves,
-      history: this.history.map(h => h.map(t => [...t]))
+      history: this.history.map(h => h.map(t => [...t])),
+      won: this.won
     };
   }
 }

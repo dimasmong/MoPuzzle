@@ -23,9 +23,15 @@ export class ColorSortScene extends Phaser.Scene {
   public init(data: { level?: number; onStateChange?: (state: any) => void } = {}) {
     this.onStateChange = data?.onStateChange || GameLauncher.onStateChangeCallback || undefined;
     const saved = Storage.getActiveGame<any>('colorsort');
-    const level = data?.level || GameLauncher.currentDifficulty || (saved?.level ?? 1);
-    this.engine = new ColorSortEngine(level, saved);
+    const unlockedLevel = Storage.getData().colorSortUnlockedLevel || 1;
+    const requestedLevel = data?.level || GameLauncher.currentDifficulty || (saved && !saved.won ? saved.level : unlockedLevel);
+    const validSaved = (saved && !saved.won && (saved.level === undefined || saved.level === requestedLevel)) ? saved : undefined;
+
+    this.engine = new ColorSortEngine(requestedLevel, validSaved);
     Stats.recordGameStart('colorsort');
+    if (!validSaved) {
+      Storage.saveActiveGame('colorsort', this.engine.serialize());
+    }
   }
 
   public create(): void {
@@ -227,13 +233,31 @@ export class ColorSortScene extends Phaser.Scene {
             spread: 60,
             origin: { y: 0.6 }
           });
+          Storage.clearActiveGame('colorsort');
+        } else {
+          Storage.saveActiveGame('colorsort', this.engine.serialize());
         }
 
-        Storage.saveActiveGame('colorsort', this.engine.serialize());
         this.notifyState();
         this.isAnimatingPour = false;
       }
     });
+  }
+
+  public advanceToNextLevel(): boolean {
+    const nextLevel = this.engine.level + 1;
+    if (nextLevel > 30) {
+      return false;
+    }
+    this.isAnimatingPour = false;
+    this.selectedTubeIndex = null;
+    this.engine.loadLevel(nextLevel);
+    Stats.recordGameStart('colorsort');
+    Storage.setUnlockedColorSortLevel(nextLevel);
+    Storage.saveActiveGame('colorsort', this.engine.serialize());
+    this.renderTubes();
+    this.notifyState();
+    return true;
   }
 
   public undoMove(): void {

@@ -62,7 +62,7 @@ export class BlockFitEngine {
   constructor(savedState?: any) {
     this.grid = Array.from({ length: this.size }, () => Array(this.size).fill(null));
 
-    if (savedState && savedState.grid && Array.isArray(savedState.grid) && savedState.grid.length === this.size) {
+    if (savedState && savedState.grid && Array.isArray(savedState.grid) && savedState.grid.length === this.size && !savedState.gameOver) {
       this.grid = savedState.grid.map((r: (string | null)[]) => [...r]);
       this.score = savedState.score ?? 0;
       this.comboStreak = savedState.comboStreak ?? 0;
@@ -252,6 +252,7 @@ export class BlockFitEngine {
       grid: this.grid.map(row => [...row]),
       score: this.score,
       comboStreak: this.comboStreak,
+      gameOver: this.gameOver,
       currentPieces: this.currentPieces.map(p => ({
         id: p.id,
         name: p.name,

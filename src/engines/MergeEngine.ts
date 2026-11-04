@@ -40,14 +40,15 @@ export class MergeEngine {
     this.gameMode = mode;
     this.board = Array.from({ length: this.size }, () => Array(this.size).fill(0));
 
-    if (savedState && savedState.board && savedState.board.length === this.size) {
+    if (savedState && savedState.board && savedState.board.length === this.size && !savedState.gameOver && (savedState.mode === undefined || savedState.mode === mode)) {
       this.board = savedState.board.map((row: number[]) => [...row]);
       this.score = savedState.score ?? 0;
       this.moves = savedState.moves ?? 0;
       this.gameMode = savedState.mode ?? mode;
       this.timeRemaining = savedState.timeRemaining ?? 90;
       this.history = savedState.history ? [...savedState.history] : [];
-      this.won = this.checkWinCondition();
+      this.hasContinuedAfterWin = savedState.hasContinuedAfterWin ?? false;
+      this.won = this.checkWinCondition() && !this.hasContinuedAfterWin;
       this.gameOver = this.checkGameOver();
     } else {
       this.restart();
@@ -269,6 +270,9 @@ export class MergeEngine {
       moves: this.moves,
       mode: this.gameMode,
       timeRemaining: this.timeRemaining,
+      hasContinuedAfterWin: this.hasContinuedAfterWin,
+      won: this.won,
+      gameOver: this.gameOver,
       history: this.history.map(h => ({
         board: h.board.map(r => [...r]),
         score: h.score,
