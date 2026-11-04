@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#243A73" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#A1E3F9" />
+      <stop offset="100%" stop-color="#00BBF9" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Background rounded rect -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Inner subtle border -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#FFFFFF" stroke-opacity="0.15" stroke-width="6" />
+
+  <!-- Puzzle 4-quadrant emblem -->
+  <g transform="translate(106, 106)" filter="url(#shadow)">
+    <!-- Top-Left: Number tile (2048) -->
+    <rect x="0" y="0" width="140" height="140" rx="28" fill="#F2B179" />
+    <text x="70" y="88" font-family="system-ui, -apple-system, sans-serif" font-size="54" font-weight="900" fill="#FFFFFF" text-anchor="middle">2048</text>
+
+    <!-- Top-Right: Liquid Flask/Tube -->
+    <rect x="160" y="0" width="140" height="140" rx="28" fill="#FFFFFF" fill-opacity="0.15" stroke="#FFFFFF" stroke-width="4" />
+    <path d="M190 28 L270 28 L270 102 C270 124 252 132 230 132 C208 132 190 124 190 102 Z" fill="url(#accentGrad)" />
+
+    <!-- Bottom-Left: Sliding tile -->
+    <rect x="0" y="160" width="140" height="140" rx="28" fill="#06D6A0" />
+    <path d="M40 230 L100 230 M70 200 L100 230 L70 260" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+
+    <!-- Bottom-Right: Block Fit Polyomino -->
+    <rect x="160" y="160" width="140" height="140" rx="28" fill="#8338EC" />
+    <g transform="translate(178, 178)" fill="#FFFFFF" fill-opacity="0.9">
+      <rect x="0" y="0" width="46" height="46" rx="8" />
+      <rect x="52" y="0" width="46" height="46" rx="8" />
+      <rect x="0" y="52" width="46" height="46" rx="8" />
+    </g>
+  </g>
+</svg>

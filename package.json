@@ -1,0 +1,41 @@
+{
+  "name": "mopuzzle",
+  "private": true,
+  "version": "1.0.0",
+  "description": "MoPuzzle - Think. Solve. Enjoy. A complete browser-based casual puzzle game collection.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "canvas-confetti": "^1.9.4",
+    "phaser": "^3.88.2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.0",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^22.13.10",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.1",
+    "vitest": "^3.0.8"
+  },
+  "keywords": [
+    "puzzle-game",
+    "html5-game",
+    "typescript",
+    "phaser",
+    "vite",
+    "browser-game",
+    "pwa",
+    "mobile-game",
+    "vercel",
+    "open-source"
+  ],
+  "author": "Dimas Mong",
+  "license": "MIT"
+}
