@@ -4,7 +4,7 @@
   "description": "A complete browser casual puzzle game suite featuring Merge Numbers, Color Sort, Slide Puzzle, and Block Fit.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#17274E",
+  "background_color": "#142244",
   "theme_color": "#243A73",
   "orientation": "portrait",
   "icons": [
@@ -18,25 +18,13 @@
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ],
   "categories": ["games", "puzzle"]

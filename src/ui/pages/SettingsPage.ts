@@ -3,7 +3,6 @@ import { Storage } from '../../core/storage';
 import { SoundManager } from '../../audio/SoundManager';
 import { Modal, Toast } from '../components';
 import { Router } from '../router';
-import { Icons } from '../icons';
 
 export function renderSettingsPage(): string {
   const data = Storage.getData();
@@ -98,18 +97,15 @@ export function renderSettingsPage(): string {
         </div>
       </div>
 
-      <!-- About MoPuzzle Card -->
-      <div class="card" id="about-nav-card" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <div class="brand-logo" style="width: 34px; height: 34px;" aria-label="MoPuzzle Logo">
-            ${Icons.logo}
-          </div>
-          <div>
-            <div style="font-size: 14px; font-weight: 700;">${I18n.t('aboutTitle')}</div>
-            <div style="font-size: 11px; color: var(--text-muted);">v1.0.1 — ${I18n.t('tagline')}</div>
-          </div>
+      <!-- About / App Info -->
+      <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 14px; font-weight: 700;">${I18n.t('aboutTitle')}</div>
+          <div style="font-size: 12px; color: var(--text-muted);">MoPuzzle v1.0.1 — Think. Solve. Enjoy.</div>
         </div>
-        <div style="color: var(--text-muted); font-size: 18px; font-weight: 700;">›</div>
+        <button class="btn btn-secondary" id="settings-about-btn" style="padding: 6px 14px; font-size: 13px;">
+          <span>${I18n.t('aboutTitle')} ➔</span>
+        </button>
       </div>
 
       <!-- Data & Storage Reset -->
@@ -184,6 +180,11 @@ export function bindSettingsEvents(container: HTMLElement): void {
     }
   });
 
+  container.querySelector('#settings-about-btn')?.addEventListener('click', () => {
+    SoundManager.play('click');
+    Router.navigate('about');
+  });
+
   // Reset Progress with confirmation
   container.querySelector('#reset-data-btn')?.addEventListener('click', () => {
     SoundManager.play('click');
@@ -217,11 +218,5 @@ export function bindSettingsEvents(container: HTMLElement): void {
       Toast.show(I18n.t('resetConfirmedToast'));
       Router.navigate('home');
     });
-  });
-
-  // Navigate to About
-  container.querySelector('#about-nav-card')?.addEventListener('click', () => {
-    SoundManager.play('click');
-    Router.navigate('about');
   });
 }

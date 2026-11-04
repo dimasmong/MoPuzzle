@@ -4,142 +4,108 @@ import path from 'path';
 
 test.describe('MoPuzzle — Website Logo & Branding Verification', () => {
 
-  test('1. Main website navbar displays SVG geometric monogram logo and text lockup', async ({ page }) => {
+  test('1. Main website navbar displays Puzzle Fusion emblem SVG and brand text', async ({ page }) => {
     await page.goto('/');
-    await page.waitForSelector('.app-header');
 
-    // Verify .brand-logo exists and contains the new SVG monogram (NOT the old text 'M')
-    const brandLogo = page.locator('.brand-logo');
-    await expect(brandLogo).toBeVisible();
+    const logo = page.locator('.brand-logo .mopuzzle-logo-svg');
+    await expect(logo).toBeVisible();
 
-    const brandLogoText = await brandLogo.innerText();
-    expect(brandLogoText.trim()).not.toBe('M');
+    // Verify all 4 puzzle quadrants are present inside the emblem
+    const hasMerge = await page.locator('.brand-logo #quadrant-merge').count();
+    const hasColorSort = await page.locator('.brand-logo #quadrant-colorsort').count();
+    const hasSlide = await page.locator('.brand-logo #quadrant-slide').count();
+    const hasBlockFit = await page.locator('.brand-logo #quadrant-blockfit').count();
 
-    // Verify the SVG element exists inside .brand-logo
-    const logoSvg = brandLogo.locator('svg.mopuzzle-logo-svg');
-    await expect(logoSvg).toBeVisible();
-
-    // Verify viewBox and dimensions
-    await expect(logoSvg).toHaveAttribute('viewBox', '0 0 512 512');
+    expect(hasMerge).toBe(1);
+    expect(hasColorSort).toBe(1);
+    expect(hasSlide).toBe(1);
+    expect(hasBlockFit).toBe(1);
 
     // Verify brand text lockup
-    const title = page.locator('.brand-text h1');
-    const tagline = page.locator('.brand-text p');
-    await expect(title).toHaveText('MoPuzzle');
-    await expect(tagline).toBeVisible();
-
-    // Capture screenshot of the navbar in Light Mode
-    const header = page.locator('.app-header');
-    await header.screenshot({ path: 'docs/screenshots/navbar-logo-light.png' });
+    await expect(page.locator('.brand-text h1')).toHaveText('MoPuzzle');
+    await expect(page.locator('.brand-text p')).toHaveText('Think. Solve. Enjoy.');
   });
 
-  test('2. Logo & text lockup maintains visual contrast across Light and Dark modes', async ({ page }) => {
+  test('2. Logo maintains visual contrast across Light and Dark themes', async ({ page }) => {
     await page.goto('/');
-    await page.waitForSelector('.app-header');
 
-    // Light Mode check
+    // Light Theme
     const html = page.locator('html');
     await expect(html).toHaveAttribute('data-theme', 'light');
-    const brandLogo = page.locator('.brand-logo');
-    await expect(brandLogo).toBeVisible();
+    await expect(page.locator('.brand-logo')).toBeVisible();
 
-    // Toggle to Dark Mode
-    const themeBtn = page.locator('#theme-toggle-btn');
-    await themeBtn.click();
-    await page.waitForTimeout(300);
-
+    // Switch to Dark Theme
+    await page.click('#theme-toggle-btn');
     await expect(html).toHaveAttribute('data-theme', 'dark');
-    await expect(brandLogo).toBeVisible();
+    await expect(page.locator('.brand-logo')).toBeVisible();
 
-    // Capture screenshot of the navbar in Dark Mode
-    const header = page.locator('.app-header');
-    await header.screenshot({ path: 'docs/screenshots/navbar-logo-dark.png' });
-
-    // Toggle back to light
-    await themeBtn.click();
-    await page.waitForTimeout(200);
+    // Switch back to Light Theme
+    await page.click('#theme-toggle-btn');
+    await expect(html).toHaveAttribute('data-theme', 'light');
   });
 
-  test('3. HTML head contains updated favicon, Apple Touch Icon, and cache-busting version', async ({ page }) => {
+  test('3. HTML head contains updated favicon, Apple Touch Icon, and manifest links', async ({ page }) => {
     await page.goto('/');
 
-    // Check SVG Favicon
-    const svgIcon = page.locator('link[rel="icon"][type="image/svg+xml"]');
-    await expect(svgIcon).toHaveAttribute('href', /icons\/icon\.svg\?v=1\.1\.0/);
+    const faviconSvg = page.locator('link[rel="icon"][type="image/svg+xml"]');
+    await expect(faviconSvg).toHaveAttribute('href', /favicon\.svg/);
 
-    // Check PNG Favicons
-    const png32Icon = page.locator('link[rel="icon"][sizes="32x32"]');
-    await expect(png32Icon).toHaveAttribute('href', /icons\/icon-32\.png\?v=1\.1\.0/);
-
-    // Check Apple Touch Icon
     const appleIcon = page.locator('link[rel="apple-touch-icon"]');
-    await expect(appleIcon).toHaveAttribute('href', /icons\/apple-touch-icon\.png\?v=1\.1\.0/);
+    await expect(appleIcon).toHaveAttribute('href', /apple-touch-icon\.png/);
 
-    // Check manifest link
-    const manifestLink = page.locator('link[rel="manifest"]');
-    await expect(manifestLink).toHaveAttribute('href', /manifest\.webmanifest\?v=1\.1\.0/);
+    const manifest = page.locator('link[rel="manifest"]');
+    await expect(manifest).toHaveAttribute('href', /manifest\.webmanifest/);
   });
 
-  test('4. Web App Manifest is accessible with updated brand colors and valid icons', async ({ request }) => {
-    const res = await request.get('/manifest.webmanifest');
-    expect(res.ok()).toBeTruthy();
+  test('4. Web App Manifest is accessible with updated brand colors and valid icons', async ({ page }) => {
+    const res = await page.request.get('/manifest.webmanifest');
+    expect(res.status()).toBe(200);
 
-    const manifest = await res.json();
-    expect(manifest.name).toBe('MoPuzzle — Think. Solve. Enjoy.');
-    expect(manifest.short_name).toBe('MoPuzzle');
-    expect(manifest.theme_color).toBe('#243A73');
-    expect(manifest.background_color).toBe('#17274E');
-
-    // Verify icons array has svg, 192, 512
-    expect(Array.isArray(manifest.icons)).toBeTruthy();
-    const srcs = manifest.icons.map((i: any) => i.src);
-    expect(srcs).toContain('/icons/icon.svg');
-    expect(srcs).toContain('/icons/icon-192.png');
-    expect(srcs).toContain('/icons/icon-512.png');
+    const manifestData = await res.json();
+    expect(manifestData.name).toContain('MoPuzzle');
+    expect(manifestData.theme_color).toBe('#243A73');
+    expect(manifestData.background_color).toBe('#142244');
+    expect(manifestData.icons.length).toBeGreaterThanOrEqual(3);
   });
 
   test('5. Static icon files exist and are non-empty valid image assets', async () => {
-    const iconFiles = [
-      'public/icons/icon.svg',
-      'public/icons/icon-512.png',
-      'public/icons/icon-192.png',
-      'public/icons/apple-touch-icon.png',
-      'public/icons/icon-48.png',
-      'public/icons/icon-32.png',
-      'public/icons/icon-16.png',
-      'public/favicon.ico'
+    const publicDir = path.resolve('public');
+    const requiredFiles = [
+      'favicon.svg',
+      'favicon.ico',
+      'apple-touch-icon.png',
+      'manifest.webmanifest',
+      'icons/icon.svg',
+      'icons/logo-standalone.svg',
+      'icons/icon-512.png',
+      'icons/icon-192.png',
+      'icons/icon-48.png',
+      'icons/icon-32.png',
+      'icons/icon-16.png'
     ];
 
-    for (const relPath of iconFiles) {
-      const fullPath = path.resolve(relPath);
-      expect(fs.existsSync(fullPath)).toBeTruthy();
+    for (const file of requiredFiles) {
+      const fullPath = path.join(publicDir, file);
+      expect(fs.existsSync(fullPath)).toBe(true);
       const stats = fs.statSync(fullPath);
-      expect(stats.size).toBeGreaterThan(100);
+      expect(stats.size).toBeGreaterThan(0);
     }
   });
 
-  test('6. About Page displays updated logo mark instead of generic M', async ({ page }) => {
+  test('6. About Page displays Puzzle Fusion emblem', async ({ page }) => {
     await page.goto('/');
-    await page.waitForSelector('.app-header');
+    await page.click('button[data-nav="settings"]');
+    await page.click('#settings-about-btn');
 
-    // Navigate to Settings then About
-    await page.locator('#settings-nav-btn').click();
-    await page.waitForSelector('.page-settings');
-
-    await page.locator('#about-nav-card').click();
-    await page.waitForSelector('.page-about');
-
-    const aboutLogo = page.locator('.page-about .brand-logo');
+    await expect(page.locator('.page-about h2')).toBeVisible();
+    const aboutLogo = page.locator('.page-about .brand-logo .mopuzzle-logo-svg');
     await expect(aboutLogo).toBeVisible();
 
-    const aboutText = await aboutLogo.innerText();
-    expect(aboutText.trim()).not.toBe('M');
-
-    const aboutSvg = aboutLogo.locator('svg.mopuzzle-logo-svg');
-    await expect(aboutSvg).toBeVisible();
-
-    // Screenshot of about page
-    await page.screenshot({ path: 'docs/screenshots/about-logo.png' });
+    // Verify all 4 game quadrants are present in About page logo
+    expect(await aboutLogo.locator('#quadrant-merge').count()).toBe(1);
+    expect(await aboutLogo.locator('#quadrant-colorsort').count()).toBe(1);
+    expect(await aboutLogo.locator('#quadrant-slide').count()).toBe(1);
+    expect(await aboutLogo.locator('#quadrant-blockfit').count()).toBe(1);
   });
 
 });

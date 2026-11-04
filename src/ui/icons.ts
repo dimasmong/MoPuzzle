@@ -1,30 +1,175 @@
 export const Icons = {
   logo: `<svg class="mopuzzle-logo-svg" viewBox="0 0 512 512" width="100%" height="100%" aria-hidden="true" focusable="false">
   <defs>
-    <linearGradient id="mpNavBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#17274E" />
+    <linearGradient id="mpNavBoardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#142244" />
       <stop offset="50%" stop-color="#243A73" />
-      <stop offset="100%" stop-color="#121F40" />
+      <stop offset="100%" stop-color="#101A33" />
     </linearGradient>
-    <linearGradient id="mpNavAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="mpNavRimGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#BAF2FD" stop-opacity="0.65" />
+      <stop offset="50%" stop-color="#A1E3F9" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#35D4A0" stop-opacity="0.45" />
+    </linearGradient>
+    <linearGradient id="mpNavMergeBlue" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#BAF2FD" />
-      <stop offset="50%" stop-color="#A1E3F9" />
+      <stop offset="100%" stop-color="#5EC8EE" />
+    </linearGradient>
+    <linearGradient id="mpNavMergePurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B282F5" />
+      <stop offset="50%" stop-color="#9A64E8" />
+      <stop offset="100%" stop-color="#7028D6" />
+    </linearGradient>
+    <linearGradient id="mpNavLiquidBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#BAF2FD" />
+      <stop offset="100%" stop-color="#4AC2EC" />
+    </linearGradient>
+    <linearGradient id="mpNavLiquidGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4EE5B2" />
+      <stop offset="50%" stop-color="#35D4A0" />
+      <stop offset="100%" stop-color="#1DBB87" />
+    </linearGradient>
+    <linearGradient id="mpNavLiquidPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#AB7BF7" />
+      <stop offset="100%" stop-color="#7834D9" />
+    </linearGradient>
+    <linearGradient id="mpNavBlockGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4CE8B3" />
+      <stop offset="100%" stop-color="#24C18D" />
+    </linearGradient>
+    <linearGradient id="mpNavBlockAccent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#BAF2FD" />
       <stop offset="100%" stop-color="#55C9EE" />
     </linearGradient>
-    <linearGradient id="mpNavWhite" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF" />
-      <stop offset="100%" stop-color="#E8F6FE" />
-    </linearGradient>
+    <filter id="mpNavDropGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#050A18" flood-opacity="0.45" />
+    </filter>
   </defs>
-  <rect width="512" height="512" rx="114" fill="url(#mpNavBg)" />
-  <rect x="14" y="14" width="484" height="484" rx="100" fill="none" stroke="#A1E3F9" stroke-opacity="0.25" stroke-width="6" />
-  <g>
-    <!-- Left Wing of M (Frost White) with Interlocking Convex Puzzle Tab -->
-    <path d="M 120 114 C 109 114 100 123 100 134 L 100 378 C 100 389 109 398 120 398 L 146 398 C 157 398 166 389 166 378 L 166 250 L 214 332 C 220 342 232 346 242 342 C 248 339 252 334 252 326 L 252 284 C 240 284 230 274 230 262 C 230 240 266 240 266 262 C 266 274 256 284 244 284 L 244 290 L 186 142 C 180 128 166 114 150 114 Z" fill="url(#mpNavWhite)" />
-    <!-- P-Loop & Right Wing of M (Electric Sky Aqua) with Interlocking Socket -->
-    <path d="M 264 114 C 252 114 242 124 242 136 L 242 216 C 254 216 264 226 264 238 C 264 260 228 260 228 238 C 228 226 238 216 250 216 L 250 174 L 336 174 C 378 174 412 208 412 250 C 412 292 378 326 336 326 L 316 326 L 366 378 C 374 386 368 398 356 398 L 328 398 C 320 398 312 394 306 388 L 260 338 L 260 378 C 260 389 251 398 240 398 L 224 398 C 216 398 210 392 210 384 Z" fill="url(#mpNavAccent)" />
-    <!-- Negative Space Counter inside P -->
-    <rect x="306" y="222" width="44" height="56" rx="22" fill="#17274E" />
+
+  <!-- Master Board Squircle Base -->
+  <rect width="512" height="512" rx="112" fill="url(#mpNavBoardBg)" />
+  <rect x="14" y="14" width="484" height="484" rx="100" fill="none" stroke="url(#mpNavRimGrad)" stroke-width="4.5" />
+  <rect x="36" y="36" width="440" height="440" rx="78" fill="#0B1426" fill-opacity="0.55" stroke="#1F325E" stroke-width="3" />
+
+  <!-- Dividing Channels -->
+  <line x1="256" y1="46" x2="256" y2="466" stroke="#14213D" stroke-width="12" stroke-linecap="round" />
+  <line x1="256" y1="46" x2="256" y2="466" stroke="#2B437D" stroke-width="2" stroke-opacity="0.4" />
+  <line x1="46" y1="256" x2="466" y2="256" stroke="#14213D" stroke-width="12" stroke-linecap="round" />
+  <line x1="46" y1="256" x2="466" y2="256" stroke="#2B437D" stroke-width="2" stroke-opacity="0.4" />
+
+  <!-- Q1 (Top-Left): Merge Numbers -->
+  <g id="quadrant-merge" filter="url(#mpNavDropGlow)">
+    <rect x="52" y="52" width="188" height="188" rx="28" fill="#131E37" fill-opacity="0.6" stroke="#1E2F54" stroke-width="2" />
+    <g transform="translate(68, 76)">
+      <rect width="72" height="72" rx="18" fill="url(#mpNavMergeBlue)" />
+      <rect x="4" y="4" width="64" height="8" rx="4" fill="#FFFFFF" fill-opacity="0.45" />
+      <path d="M 26 27 C 26 20 46 20 46 28 C 46 34 39 37 32 44 L 26 50 L 47 50 L 47 55 L 25 55 L 25 49 L 36 38 C 40 33 42 30 42 27 C 42 24 38 23 34 23 C 30 23 28 25 27 28 Z" fill="#102042" />
+    </g>
+    <path d="M 124 132 L 134 140 L 124 148 M 132 132 L 142 140 L 132 148" fill="none" stroke="#A1E3F9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.9" />
+    <g transform="translate(132, 128)">
+      <rect width="92" height="92" rx="22" fill="url(#mpNavMergePurple)" stroke="#D4BBFC" stroke-width="2" stroke-opacity="0.6" />
+      <rect x="5" y="5" width="82" height="10" rx="5" fill="#FFFFFF" fill-opacity="0.4" />
+      <path d="M 52 24 L 32 54 L 52 54 L 52 68 L 59 68 L 59 54 L 66 54 L 66 48 L 59 48 L 59 24 Z M 52 33 L 52 48 L 40 48 Z" fill="#FFFFFF" />
+    </g>
+  </g>
+
+  <!-- Q2 (Top-Right): Color Sort -->
+  <g id="quadrant-colorsort" filter="url(#mpNavDropGlow)">
+    <rect x="272" y="52" width="188" height="188" rx="28" fill="#131E37" fill-opacity="0.6" stroke="#1E2F54" stroke-width="2" />
+    <g transform="translate(328, 64)">
+      <rect x="-8" y="0" width="92" height="12" rx="6" fill="#A1E3F9" fill-opacity="0.25" stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="2" />
+      <clipPath id="mpNavTubeClip">
+        <path d="M 0 8 L 0 126 A 38 38 0 0 0 76 126 L 76 8 Z" />
+      </clipPath>
+      <g clip-path="url(#mpNavTubeClip)">
+        <rect x="0" y="8" width="76" height="160" fill="#0C1527" />
+        <path d="M 0 110 L 0 126 A 38 38 0 0 0 76 126 L 76 110 Z" fill="url(#mpNavLiquidPurple)" />
+        <rect x="0" y="66" width="76" height="46" fill="url(#mpNavLiquidGreen)" />
+        <line x1="0" y1="66" x2="76" y2="66" stroke="#35D4A0" stroke-width="1.5" stroke-opacity="0.6" />
+        <path d="M 0 24 Q 38 30 76 24 L 76 66 L 0 66 Z" fill="url(#mpNavLiquidBlue)" />
+        <path d="M 0 24 Q 38 30 76 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-opacity="0.75" />
+        <circle cx="24" cy="46" r="3.5" fill="#FFFFFF" fill-opacity="0.6" />
+        <circle cx="52" cy="88" r="4" fill="#FFFFFF" fill-opacity="0.5" />
+        <circle cx="34" cy="136" r="3" fill="#FFFFFF" fill-opacity="0.5" />
+      </g>
+      <path d="M 0 8 L 0 126 A 38 38 0 0 0 76 126 L 76 8" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-opacity="0.65" />
+      <path d="M 8 16 L 8 124 A 30 30 0 0 0 38 154" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-opacity="0.4" />
+    </g>
+  </g>
+
+  <!-- Q3 (Bottom-Left): Slide Puzzle -->
+  <g id="quadrant-slide" filter="url(#mpNavDropGlow)">
+    <rect x="52" y="272" width="188" height="188" rx="28" fill="#131E37" fill-opacity="0.6" stroke="#1E2F54" stroke-width="2" />
+    <g transform="translate(68, 288)">
+      <g transform="translate(0, 0)">
+        <rect width="72" height="72" rx="16" fill="url(#mpNavMergePurple)" />
+        <rect x="4" y="4" width="64" height="8" rx="4" fill="#FFFFFF" fill-opacity="0.35" />
+        <path d="M 33 28 L 40 23 L 44 23 L 44 51 L 37 51 L 37 28 Z M 30 51 L 49 51 L 49 55 L 30 55 Z" fill="#FFFFFF" />
+      </g>
+      <g transform="translate(84, 0)">
+        <rect width="72" height="72" rx="16" fill="url(#mpNavMergeBlue)" />
+        <rect x="4" y="4" width="64" height="8" rx="4" fill="#FFFFFF" fill-opacity="0.45" />
+        <path d="M 27 27 C 27 20 47 20 47 28 C 47 34 40 37 33 44 L 27 50 L 48 50 L 48 55 L 26 55 L 26 49 L 37 38 C 41 33 43 30 43 27 C 43 24 39 23 35 23 C 31 23 29 25 28 28 Z" fill="#102042" />
+      </g>
+      <g transform="translate(0, 84)">
+        <rect width="72" height="72" rx="16" fill="url(#mpNavBlockGreen)" />
+        <rect x="4" y="4" width="64" height="8" rx="4" fill="#FFFFFF" fill-opacity="0.4" />
+        <path d="M 28 24 L 46 24 L 46 29 L 37 37 C 42 37 47 40 47 46 C 47 53 41 56 34 56 C 29 56 26 53 25 49 L 31 47 C 32 49 33 51 35 51 C 38 51 40 49 40 46 C 40 42 37 41 33 41 L 29 41 L 29 36 L 38 29 L 28 29 Z" fill="#102042" />
+      </g>
+      <g transform="translate(84, 84)">
+        <rect width="72" height="72" rx="16" fill="#080F1D" stroke="#A1E3F9" stroke-width="2" stroke-opacity="0.3" stroke-dasharray="6 4" />
+        <path d="M 36 24 L 36 48 M 28 40 L 36 48 L 44 40" fill="none" stroke="#A1E3F9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.45" />
+      </g>
+    </g>
+  </g>
+
+  <!-- Q4 (Bottom-Right): Block Fit -->
+  <g id="quadrant-blockfit" filter="url(#mpNavDropGlow)">
+    <rect x="272" y="272" width="188" height="188" rx="28" fill="#131E37" fill-opacity="0.6" stroke="#1E2F54" stroke-width="2" />
+    <g transform="translate(290, 290)">
+      <g opacity="0.18" stroke="#A1E3F9" stroke-width="1.5">
+        <rect x="0" y="0" width="48" height="48" rx="8" fill="none" />
+        <rect x="52" y="0" width="48" height="48" rx="8" fill="none" />
+        <rect x="104" y="0" width="48" height="48" rx="8" fill="none" />
+        <rect x="0" y="52" width="48" height="48" rx="8" fill="none" />
+        <rect x="52" y="52" width="48" height="48" rx="8" fill="none" />
+        <rect x="104" y="52" width="48" height="48" rx="8" fill="none" />
+        <rect x="0" y="104" width="48" height="48" rx="8" fill="none" />
+        <rect x="52" y="104" width="48" height="48" rx="8" fill="none" />
+        <rect x="104" y="104" width="48" height="48" rx="8" fill="none" />
+      </g>
+      <g transform="translate(0, 0)">
+        <rect width="48" height="48" rx="10" fill="url(#mpNavBlockGreen)" />
+        <rect x="3" y="3" width="42" height="6" rx="3" fill="#FFFFFF" fill-opacity="0.45" />
+        <rect x="3" y="41" width="42" height="4" rx="2" fill="#000000" fill-opacity="0.2" />
+      </g>
+      <g transform="translate(0, 52)">
+        <rect width="48" height="48" rx="10" fill="url(#mpNavBlockGreen)" />
+        <rect x="3" y="3" width="42" height="6" rx="3" fill="#FFFFFF" fill-opacity="0.45" />
+        <rect x="3" y="41" width="42" height="4" rx="2" fill="#000000" fill-opacity="0.2" />
+      </g>
+      <g transform="translate(52, 52)">
+        <rect width="48" height="48" rx="10" fill="url(#mpNavBlockGreen)" />
+        <rect x="3" y="3" width="42" height="6" rx="3" fill="#FFFFFF" fill-opacity="0.45" />
+        <rect x="3" y="41" width="42" height="4" rx="2" fill="#000000" fill-opacity="0.2" />
+      </g>
+      <g transform="translate(52, 0)">
+        <rect width="48" height="48" rx="10" fill="url(#mpNavBlockAccent)" stroke="#FFFFFF" stroke-width="2" stroke-opacity="0.8" />
+        <rect x="3" y="3" width="42" height="6" rx="3" fill="#FFFFFF" fill-opacity="0.5" />
+        <rect x="3" y="41" width="42" height="4" rx="2" fill="#000000" fill-opacity="0.2" />
+      </g>
+      <g transform="translate(104, 52)">
+        <rect width="48" height="48" rx="10" fill="#35D4A0" fill-opacity="0.2" stroke="#35D4A0" stroke-width="2" stroke-dasharray="4 3" stroke-opacity="0.7" />
+      </g>
+    </g>
+  </g>
+
+  <!-- Center Fusion Medallion -->
+  <g id="center-fusion-node">
+    <circle cx="256" cy="256" r="36" fill="#0E182F" stroke="#243A73" stroke-width="3" />
+    <circle cx="256" cy="256" r="26" fill="url(#mpNavBoardBg)" stroke="#A1E3F9" stroke-width="3.5" />
+    <polygon points="256,238 268,256 256,274 244,256" fill="#BAF2FD" />
+    <circle cx="256" cy="256" r="4.5" fill="#FFFFFF" />
   </g>
 </svg>`,
   home: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
