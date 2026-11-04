@@ -166,7 +166,7 @@ export const translations = {
 
     // About & FAQ Page
     aboutTitle: 'About MoPuzzle',
-    aboutTagline: 'MoPuzzle v1.0.0 — Think. Solve. Enjoy.',
+    aboutTagline: 'MoPuzzle v1.0.1 — Think. Solve. Enjoy.',
     aboutDesc: 'MoPuzzle is an open-source, client-side casual puzzle suite engineered for instant play on desktop, tablet, and mobile devices. Zero telemetry, zero paid APIs, zero logins, fully offline-capable.',
     developerLabel: 'Developer & Architecture',
     developerName: 'Dimas Mong',
@@ -356,7 +356,7 @@ export const translations = {
 
     // About & FAQ Page
     aboutTitle: 'Tentang MoPuzzle',
-    aboutTagline: 'MoPuzzle v1.0.0 — Pikir. Selesaikan. Nikmati.',
+    aboutTagline: 'MoPuzzle v1.0.1 — Pikir. Selesaikan. Nikmati.',
     aboutDesc: 'MoPuzzle adalah rangkaian permainan teka-teki kasual sisi klien bersumber terbuka yang dirancang untuk dapat dimainkan secara instan di komputer desktop, tablet, dan ponsel. Tanpa telemetri, tanpa API berbayar, tanpa login, dan mendukung penggunaan luring penuh.',
     developerLabel: 'Pengembang & Arsitektur',
     developerName: 'Dimas Mong',

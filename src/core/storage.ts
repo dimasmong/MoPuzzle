@@ -39,31 +39,48 @@ class StorageService {
   public async init(): Promise<SaveDataSchema> {
     if (this.memoryCache) return this.memoryCache;
 
+    let idbData: SaveDataSchema | null = null;
     this.isIndexedDBAvailable = typeof window !== 'undefined' && 'indexedDB' in window;
     if (this.isIndexedDBAvailable) {
       try {
         this.db = await this.openIndexedDB();
-        const data = await this.readFromIDB();
-        if (data) {
-          this.memoryCache = this.validateAndMigrate(data);
-          return this.memoryCache;
-        }
+        idbData = await this.readFromIDB();
       } catch (err) {
         console.warn('[MoPuzzle Storage] IndexedDB initialization failed, falling back to LocalStorage:', err);
         this.isIndexedDBAvailable = false;
       }
     }
 
-    // Fallback: LocalStorage
+    // Read LocalStorage backup
+    let localData: SaveDataSchema | null = null;
     try {
-      const localRaw = localStorage.getItem(STORAGE_KEY);
+      const localRaw = typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
       if (localRaw) {
-        const parsed = JSON.parse(localRaw);
-        this.memoryCache = this.validateAndMigrate(parsed);
-        return this.memoryCache;
+        localData = JSON.parse(localRaw);
       }
     } catch (err) {
-      console.warn('[MoPuzzle Storage] LocalStorage read failed or corrupted, initializing fresh save:', err);
+      console.warn('[MoPuzzle Storage] LocalStorage read failed or corrupted:', err);
+    }
+
+    // Reconcile IDB and LocalStorage so active games and stats are never lost
+    let mergedData: SaveDataSchema | null = null;
+    if (idbData && localData) {
+      mergedData = {
+        ...idbData,
+        ...localData,
+        settings: { ...idbData.settings, ...localData.settings },
+        stats: { ...idbData.stats, ...localData.stats },
+        activeGames: { ...(idbData.activeGames || {}), ...(localData.activeGames || {}) },
+        achievements: { ...(idbData.achievements || {}), ...(localData.achievements || {}) },
+        colorSortUnlockedLevel: Math.max(idbData.colorSortUnlockedLevel || 1, localData.colorSortUnlockedLevel || 1)
+      };
+    } else {
+      mergedData = idbData || localData;
+    }
+
+    if (mergedData) {
+      this.memoryCache = this.validateAndMigrate(mergedData);
+      return this.memoryCache;
     }
 
     // Default fresh save

@@ -90,6 +90,9 @@ export class GameLauncher {
         const nw = Math.max(320, Math.floor(r.width));
         const nh = Math.max(420, Math.floor(r.height));
         this.currentGame.scale.resize(nw, nh);
+        if (this.currentScene && typeof (this.currentScene as any).onResize === 'function') {
+          (this.currentScene as any).onResize(nw, nh);
+        }
       }
     };
     window.addEventListener('resize', this.resizeListener);
@@ -97,6 +100,10 @@ export class GameLauncher {
 
   public static getCurrentScene<T = any>(): T | null {
     return (this.currentScene as unknown as T) || null;
+  }
+
+  public static getGame(): Phaser.Game | null {
+    return this.currentGame;
   }
 
   public static undo(): void {

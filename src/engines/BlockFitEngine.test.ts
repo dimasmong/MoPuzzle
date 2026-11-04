@@ -186,4 +186,70 @@ describe('BlockFitEngine', () => {
     };
     expect(engine.checkGameOver()).toBe(false);
   });
+
+  it('allows valid placement at all four corners and edges', () => {
+    const dot = {
+      id: 'corner_dot',
+      name: '1x1',
+      matrix: [[1]],
+      color: '#FFBE0B',
+      used: false
+    };
+
+    // (0,0) Top-left corner
+    expect(engine.canPlacePiece(dot, 0, 0)).toBe(true);
+    // (0,9) Top-right corner
+    expect(engine.canPlacePiece(dot, 0, 9)).toBe(true);
+    // (9,0) Bottom-left corner
+    expect(engine.canPlacePiece(dot, 9, 0)).toBe(true);
+    // (9,9) Bottom-right corner
+    expect(engine.canPlacePiece(dot, 9, 9)).toBe(true);
+
+    // Multi-cell pieces at bottom and right edges
+    const bar2x1 = {
+      id: 'bar2x1',
+      name: '2x1',
+      matrix: [[1], [1]],
+      color: '#3A86FF',
+      used: false
+    };
+    // Can place at bottom edge row 8 (occupies 8 and 9)
+    expect(engine.canPlacePiece(bar2x1, 8, 9)).toBe(true);
+    // Cannot place at bottom edge row 9 (would overflow to 10)
+    expect(engine.canPlacePiece(bar2x1, 9, 9)).toBe(false);
+
+    const bar1x2 = {
+      id: 'bar1x2',
+      name: '1x2',
+      matrix: [[1, 1]],
+      color: '#3A86FF',
+      used: false
+    };
+    // Can place at right edge col 8 (occupies 8 and 9)
+    expect(engine.canPlacePiece(bar1x2, 9, 8)).toBe(true);
+    // Cannot place at right edge col 9 (would overflow to 10)
+    expect(engine.canPlacePiece(bar1x2, 9, 9)).toBe(false);
+  });
+
+  it('correctly serializes and deserializes game state for save and resume', () => {
+    engine.grid[0][0] = '#FF0000';
+    engine.grid[9][9] = '#00FF00';
+    engine.score = 450;
+    engine.comboStreak = 3;
+    engine.currentPieces[0].used = true;
+
+    const serialized = engine.serialize();
+    expect(serialized.score).toBe(450);
+    expect(serialized.comboStreak).toBe(3);
+    expect(serialized.grid[0][0]).toBe('#FF0000');
+    expect(serialized.grid[9][9]).toBe('#00FF00');
+    expect(serialized.currentPieces[0].used).toBe(true);
+
+    const resumedEngine = new BlockFitEngine(serialized);
+    expect(resumedEngine.score).toBe(450);
+    expect(resumedEngine.comboStreak).toBe(3);
+    expect(resumedEngine.grid[0][0]).toBe('#FF0000');
+    expect(resumedEngine.grid[9][9]).toBe('#00FF00');
+    expect(resumedEngine.currentPieces[0].used).toBe(true);
+  });
 });

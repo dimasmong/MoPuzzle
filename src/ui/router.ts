@@ -96,7 +96,7 @@ class RouterService {
 
     this.appRoot.innerHTML = `
       ${renderHeader()}
-      <main class="app-content" id="main-content">
+      <main class="app-content ${this.currentRoute === 'play' ? 'in-gameplay' : ''}" id="main-content">
         ${pageHtml}
       </main>
       ${renderFooter()}

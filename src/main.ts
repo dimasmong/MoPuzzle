@@ -6,6 +6,7 @@ import { SoundManager } from './audio/SoundManager';
 import { Achievements } from './core/achievements';
 import { Toast } from './ui/components';
 import { Router } from './ui/router';
+import { GameLauncher } from './scenes/GameLauncher';
 
 async function bootstrap() {
   const root = document.getElementById('app');
@@ -58,6 +59,10 @@ async function bootstrap() {
 
   // 7. Mount Router
   Router.init(root);
+
+  // Expose for testing and inspection
+  (window as any).__MOPUZZLE_LAUNCHER__ = GameLauncher;
+  (window as any).__MOPUZZLE_ROUTER__ = Router;
 }
 
 // Start application

@@ -161,6 +161,13 @@ body {
   flex-direction: column;
 }
 
+@media (min-width: 640px) {
+  .app-content.in-gameplay {
+    max-width: 680px;
+    padding: 12px 20px;
+  }
+}
+
 /* Bottom Navigation Bar for Mobile */
 .bottom-nav {
   position: sticky;

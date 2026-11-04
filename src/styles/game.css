@@ -79,7 +79,15 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  touch-action: none;
+  touch-action: none !important;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@media (min-width: 768px) and (min-height: 700px) {
+  .game-canvas-container {
+    min-height: 600px;
+  }
 }
 
 .game-canvas-container canvas {
