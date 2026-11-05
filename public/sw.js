@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mopuzzle-cache-v1.0.3';
+const CACHE_NAME = 'mopuzzle-cache-v1.1.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

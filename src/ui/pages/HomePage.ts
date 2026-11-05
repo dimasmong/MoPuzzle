@@ -8,6 +8,8 @@ import { GameMode } from '../../core/types';
 export function renderHomePage(): string {
   const data = Storage.getData();
   const activeGames = data.activeGames;
+  const currentLang = data.settings.language || 'en';
+  const currentWsLevel = Storage.getUnlockedWordSearchLevel(currentLang);
 
   // Check if any game is in progress for Continue Playing banner
   let continueMode: GameMode | null = null;
@@ -16,6 +18,8 @@ export function renderHomePage(): string {
   else if (isGameActive(activeGames.colorsort)) continueMode = 'colorsort';
   else if (isGameActive(activeGames.slide)) continueMode = 'slide';
   else if (isGameActive(activeGames.blockfit)) continueMode = 'blockfit';
+  else if (isGameActive(activeGames.mahjong)) continueMode = 'mahjong';
+  else if (isGameActive(activeGames.wordsearch)) continueMode = 'wordsearch';
 
   const continueBanner = continueMode ? `
     <div class="card" style="background: linear-gradient(135deg, rgba(36, 58, 115, 0.95), rgba(58, 134, 255, 0.9)); color: #FFFFFF; display: flex; justify-content: space-between; align-items: center;">
@@ -119,6 +123,46 @@ export function renderHomePage(): string {
             </button>
           </div>
         </div>
+
+        <!-- MODE 5: Mahjong Solitaire -->
+        <div class="game-card" data-mode="mahjong">
+          <div class="game-card-icon" style="background: #F3E8FF; color: #7C3AED;">
+            🀄
+          </div>
+          <div>
+            <div class="game-card-title">${I18n.t('mahjongTitle')}</div>
+            <div class="game-card-sub">${I18n.t('mahjongSubtitle')}</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">
+              ${I18n.t('level')} ${data.mahjongUnlockedLevel || 1}
+            </span>
+            <button class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;">
+              ${Icons.play}
+              <span>${I18n.t('play')}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- MODE 6: Word Search -->
+        <div class="game-card" data-mode="wordsearch">
+          <div class="game-card-icon" style="background: #DCFCE7; color: #15803D;">
+            🔍
+          </div>
+          <div>
+            <div class="game-card-title">${I18n.t('wordSearchTitle')}</div>
+            <div class="game-card-sub">${I18n.t('wordSearchSubtitle')}</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+            <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">
+              ${I18n.t('level')} ${currentWsLevel || 1}
+            </span>
+            <button class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;">
+              ${Icons.play}
+              <span>${I18n.t('play')}</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Quick links banner -->
@@ -145,6 +189,8 @@ export function bindHomePageEvents(container: HTMLElement): void {
     else if (isGameActive(data.activeGames.colorsort)) Router.navigate('play', { mode: 'colorsort', difficulty: data.activeGames.colorsort?.level });
     else if (isGameActive(data.activeGames.slide)) Router.navigate('play', { mode: 'slide', difficulty: data.activeGames.slide?.size });
     else if (isGameActive(data.activeGames.blockfit)) Router.navigate('play', { mode: 'blockfit' });
+    else if (isGameActive(data.activeGames.mahjong)) Router.navigate('play', { mode: 'mahjong', difficulty: data.activeGames.mahjong?.level });
+    else if (isGameActive(data.activeGames.wordsearch)) Router.navigate('play', { mode: 'wordsearch', difficulty: data.activeGames.wordsearch?.level });
   });
 
   container.querySelectorAll('[data-mode]').forEach(el => {

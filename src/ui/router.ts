@@ -73,7 +73,7 @@ class RouterService {
         pageHtml = renderGameplayPage(mode, diff);
         break;
       case 'levelselect':
-        pageHtml = renderLevelSelectPage();
+        pageHtml = renderLevelSelectPage(mode);
         break;
       case 'stats':
         pageHtml = renderStatsPage();
@@ -124,7 +124,7 @@ class RouterService {
         bindGameplayPageEvents(contentEl, mode, diff);
         break;
       case 'levelselect':
-        bindLevelSelectEvents(contentEl);
+        bindLevelSelectEvents(contentEl, mode);
         break;
       case 'stats':
         bindStatsEvents(contentEl);

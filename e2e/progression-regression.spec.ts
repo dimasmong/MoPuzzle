@@ -325,8 +325,8 @@ test.describe('MoPuzzle — Gameplay Progression & Victory Flow Regression Suite
     await expect(page.locator('.page-details h2')).toContainText('Block Fit');
     await page.click('#details-back-btn');
 
-    // Verified back on Home with 4 game cards
-    await expect(page.locator('.game-card')).toHaveCount(4);
+    // Verified back on Home with 6 game cards
+    await expect(page.locator('.game-card')).toHaveCount(6);
   });
 
 });

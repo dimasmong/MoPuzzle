@@ -11,16 +11,20 @@ import { Diagnostics } from '../../core/diagnostics';
 
 export function renderGameplayPage(mode: GameMode, difficulty?: any): string {
   const data = Storage.getData();
-  const stats = data.stats[mode];
+  const stats = data.stats[mode] || { highScore: 0 };
+  const currentLang = data.settings.language || 'en';
 
-  const showUndo = mode === 'merge' || mode === 'colorsort';
-  const showHint = mode === 'colorsort';
+  const showUndo = mode === 'merge' || mode === 'colorsort' || mode === 'mahjong';
+  const showShuffle = mode === 'mahjong';
+  const showHint = mode === 'colorsort' || mode === 'mahjong' || mode === 'wordsearch';
 
   let modeLabel = '';
   if (mode === 'merge') modeLabel = difficulty === 'timed' ? I18n.t('timedMode') : I18n.t('classicMode');
-  else if (mode === 'colorsort') modeLabel = `${I18n.t('level')} ${difficulty || data.colorSortUnlockedLevel}`;
+  else if (mode === 'colorsort') modeLabel = `${I18n.t('level')} ${difficulty || data.colorSortUnlockedLevel || 1}`;
   else if (mode === 'slide') modeLabel = `${difficulty || 4}×${difficulty || 4}`;
   else if (mode === 'blockfit') modeLabel = '10×10';
+  else if (mode === 'mahjong') modeLabel = `${I18n.t('level')} ${difficulty || data.mahjongUnlockedLevel || 1}`;
+  else if (mode === 'wordsearch') modeLabel = `${I18n.t('level')} ${difficulty || Storage.getUnlockedWordSearchLevel(currentLang) || 1}`;
 
   return `
     <div class="gameplay-wrapper">
@@ -40,8 +44,16 @@ export function renderGameplayPage(mode: GameMode, difficulty?: any): string {
 
       <!-- In-Game HUD -->
       <div class="game-hud" id="gameplay-hud">
-        ${renderHudItems(mode, { score: 0, best: stats.highScore, moves: 0, time: 0 })}
+        ${renderHudItems(mode, { score: 0, best: stats.highScore || 0, moves: 0, time: 0, level: difficulty || 1 })}
       </div>
+
+      <!-- Mahjong Stuck Banner (Hidden by default) -->
+      <div class="game-stuck-banner" id="mahjong-stuck-banner" style="display: none;">
+        ${I18n.t('stuckNotice')}
+      </div>
+
+      <!-- Word Search Chip List (Rendered for wordsearch) -->
+      ${mode === 'wordsearch' ? `<div class="word-search-chip-list" id="ws-chip-list"></div>` : ''}
 
       <!-- Canvas Mount Area -->
       <div class="game-canvas-container" id="phaser-container">
@@ -54,6 +66,13 @@ export function renderGameplayPage(mode: GameMode, difficulty?: any): string {
           <button class="action-btn" id="game-undo-btn" title="${I18n.t('undo')}">
             ${Icons.undo}
             <span>${I18n.t('undo')}</span>
+          </button>
+        ` : ''}
+
+        ${showShuffle ? `
+          <button class="action-btn" id="game-shuffle-btn" title="${I18n.t('shuffle')}">
+            ${Icons.shuffle}
+            <span>${I18n.t('shuffle')}</span>
           </button>
         ` : ''}
 
@@ -73,7 +92,7 @@ export function renderGameplayPage(mode: GameMode, difficulty?: any): string {
   `;
 }
 
-function renderHudItems(mode: GameMode, values: { score: number; best: number; moves: number; time: number; combo?: number }): string {
+function renderHudItems(mode: GameMode, values: { score: number; best: number; moves: number; time: number; combo?: number; level?: number; remaining?: number; pairsAvailable?: number; found?: number; total?: number }): string {
   if (mode === 'merge') {
     return `
       <div class="hud-item">
@@ -97,7 +116,7 @@ function renderHudItems(mode: GameMode, values: { score: number; best: number; m
     return `
       <div class="hud-item">
         <span class="hud-label">${I18n.t('level')}</span>
-        <span class="hud-value" id="hud-level">${values.score || 1}</span>
+        <span class="hud-value" id="hud-level">${values.level || 1}</span>
       </div>
       <div class="hud-item">
         <span class="hud-label">${I18n.t('moves')}</span>
@@ -109,6 +128,40 @@ function renderHudItems(mode: GameMode, values: { score: number; best: number; m
       <div class="hud-item">
         <span class="hud-label">${I18n.t('moves')}</span>
         <span class="hud-value" id="hud-moves">${values.moves}</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">${I18n.t('time')}</span>
+        <span class="hud-value" id="hud-time">${formatTime(values.time)}</span>
+      </div>
+    `;
+  } else if (mode === 'mahjong') {
+    return `
+      <div class="hud-item">
+        <span class="hud-label">${I18n.t('level')}</span>
+        <span class="hud-value" id="hud-level">${values.level || 1}</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">${I18n.t('remainingTiles')}</span>
+        <span class="hud-value" id="hud-remaining">${values.remaining ?? 24}</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">${I18n.t('availablePairs')}</span>
+        <span class="hud-value" id="hud-pairs">${values.pairsAvailable ?? 0}</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">${I18n.t('time')}</span>
+        <span class="hud-value" id="hud-time">${formatTime(values.time)}</span>
+      </div>
+    `;
+  } else if (mode === 'wordsearch') {
+    return `
+      <div class="hud-item">
+        <span class="hud-label">${I18n.t('level')}</span>
+        <span class="hud-value" id="hud-level">${values.level || 1}</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">${I18n.t('wordsFound')}</span>
+        <span class="hud-value" id="hud-found">${values.found ?? 0} / ${values.total ?? 4}</span>
       </div>
       <div class="hud-item">
         <span class="hud-label">${I18n.t('time')}</span>
@@ -164,15 +217,16 @@ export function bindGameplayPageEvents(container: HTMLElement, mode: GameMode, d
     GameLauncher.undo();
   });
 
+  container.querySelector('#game-shuffle-btn')?.addEventListener('click', () => {
+    GameLauncher.shuffle();
+  });
+
   container.querySelector('#game-restart-btn')?.addEventListener('click', () => {
     GameLauncher.restart();
   });
 
   container.querySelector('#game-hint-btn')?.addEventListener('click', () => {
-    const hintRes = GameLauncher.hint();
-    if (hintRes) {
-      // Hint animation is played in scene
-    }
+    GameLauncher.hint();
   });
 
   // Launch Phaser Scene
@@ -192,16 +246,42 @@ export function bindGameplayPageEvents(container: HTMLElement, mode: GameMode, d
           timeEl.textContent = `${state.timeRemaining}s`;
           const tc = container.querySelector('#hud-time-container') as HTMLElement;
           if (tc) tc.style.display = 'flex';
-        } else if (mode === 'slide' && state.elapsedSeconds !== undefined) {
-          timeEl.textContent = formatTime(state.elapsedSeconds);
+        } else if ((mode === 'slide' || mode === 'mahjong' || mode === 'wordsearch') && (state.elapsedSeconds !== undefined || state.time !== undefined)) {
+          timeEl.textContent = formatTime(state.elapsedSeconds ?? state.time ?? 0);
         }
       }
 
       const levelEl = container.querySelector('#hud-level');
       if (levelEl && state.level !== undefined) levelEl.textContent = String(state.level);
 
+      const remainingEl = container.querySelector('#hud-remaining');
+      if (remainingEl && state.remaining !== undefined) remainingEl.textContent = String(state.remaining);
+
+      const pairsEl = container.querySelector('#hud-pairs');
+      if (pairsEl && state.pairsAvailable !== undefined) pairsEl.textContent = String(state.pairsAvailable);
+
+      const foundEl = container.querySelector('#hud-found');
+      if (foundEl && state.found !== undefined && state.total !== undefined) {
+        foundEl.textContent = `${state.found} / ${state.total}`;
+      }
+
+      const stuckBanner = container.querySelector('#mahjong-stuck-banner') as HTMLElement;
+      if (stuckBanner) {
+        stuckBanner.style.display = state.isStuck ? 'block' : 'none';
+      }
+
+      // Update Word Search Chips
+      if (mode === 'wordsearch' && state.words && Array.isArray(state.words)) {
+        const chipContainer = container.querySelector('#ws-chip-list');
+        if (chipContainer) {
+          chipContainer.innerHTML = state.words.map((tw: any) => `
+            <span class="word-chip ${tw.found ? 'found' : ''}">${tw.word}</span>
+          `).join('');
+        }
+      }
+
       const levelBadge = container.querySelector('.game-mode-badge');
-      if (levelBadge && state.level !== undefined && mode === 'colorsort') {
+      if (levelBadge && state.level !== undefined && (mode === 'colorsort' || mode === 'mahjong' || mode === 'wordsearch')) {
         levelBadge.textContent = `${I18n.t('level')} ${state.level}`;
       }
 
@@ -213,7 +293,7 @@ export function bindGameplayPageEvents(container: HTMLElement, mode: GameMode, d
 
       const bestEl = container.querySelector('#hud-best');
       if (bestEl) {
-        const hs = Storage.getData().stats[mode].highScore;
+        const hs = Storage.getData().stats[mode]?.highScore || 0;
         bestEl.textContent = String(Math.max(hs, state.score ?? 0));
       }
 
@@ -235,7 +315,6 @@ export function bindGameplayPageEvents(container: HTMLElement, mode: GameMode, d
 }
 
 function showVictoryModal(mode: GameMode, state: any): void {
-  // Prevent duplicate modals if already open
   if (document.getElementById('active-modal')) {
     return;
   }
@@ -256,6 +335,74 @@ function showVictoryModal(mode: GameMode, state: any): void {
     detailsHtml = `
       <div style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">${I18n.t('level')}: ${state.level || 1}</div>
       ${state.moves !== undefined ? `<div style="font-size: 14px; color: var(--text-muted);">${I18n.t('moves')}: ${state.moves}</div>` : ''}
+    `;
+
+    actions = `
+      <button class="btn btn-secondary" id="modal-victory-home">
+        ${Icons.home}
+        <span>${I18n.t('home')}</span>
+      </button>
+      ${isCampaignEnd ? `
+        <button class="btn btn-secondary" id="modal-select-level">
+          ${Icons.settings}
+          <span>${I18n.t('levelSelect')}</span>
+        </button>
+        <button class="btn btn-primary" id="modal-play-again">
+          ${Icons.restart}
+          <span>${I18n.t('playAgain')}</span>
+        </button>
+      ` : `
+        <button class="btn btn-primary" id="modal-next-level">
+          ${Icons.play}
+          <span>${I18n.t('nextLevel')}</span>
+        </button>
+      `}
+    `;
+  } else if (mode === 'mahjong') {
+    const isCampaignEnd = (state.level || 1) >= 20;
+    if (isCampaignEnd) {
+      title = I18n.t('campaignComplete');
+      desc = I18n.t('campaignCompleteMahjong');
+      icon = '🌟';
+    }
+    detailsHtml = `
+      <div style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">${I18n.t('level')}: ${state.level || 1}</div>
+      ${state.moves !== undefined ? `<div style="font-size: 14px; color: var(--text-muted);">${I18n.t('moves')}: ${state.moves}</div>` : ''}
+      ${(state.time !== undefined || state.elapsedSeconds !== undefined) ? `<div style="font-size: 14px; color: var(--text-muted);">${I18n.t('time')}: ${formatTime(state.time ?? state.elapsedSeconds ?? 0)}</div>` : ''}
+    `;
+
+    actions = `
+      <button class="btn btn-secondary" id="modal-victory-home">
+        ${Icons.home}
+        <span>${I18n.t('home')}</span>
+      </button>
+      ${isCampaignEnd ? `
+        <button class="btn btn-secondary" id="modal-select-level">
+          ${Icons.settings}
+          <span>${I18n.t('levelSelect')}</span>
+        </button>
+        <button class="btn btn-primary" id="modal-play-again">
+          ${Icons.restart}
+          <span>${I18n.t('playAgain')}</span>
+        </button>
+      ` : `
+        <button class="btn btn-primary" id="modal-next-level">
+          ${Icons.play}
+          <span>${I18n.t('nextLevel')}</span>
+        </button>
+      `}
+    `;
+  } else if (mode === 'wordsearch') {
+    const isCampaignEnd = (state.level || 1) >= 20;
+    if (isCampaignEnd) {
+      title = I18n.t('campaignComplete');
+      desc = I18n.t('campaignCompleteWordSearch');
+      icon = '🌟';
+    }
+    detailsHtml = `
+      <div style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">${I18n.t('level')}: ${state.level || 1}</div>
+      ${state.found !== undefined ? `<div style="font-size: 14px; color: var(--text-muted);">${I18n.t('wordsFound')}: ${state.found} / ${state.total}</div>` : ''}
+      ${(state.time !== undefined || state.elapsedSeconds !== undefined) ? `<div style="font-size: 14px; color: var(--text-muted);">${I18n.t('time')}: ${formatTime(state.time ?? state.elapsedSeconds ?? 0)}</div>` : ''}
     `;
 
     actions = `
@@ -374,13 +521,14 @@ function showVictoryModal(mode: GameMode, state: any): void {
     if (!advanced) {
       const currentLvl = (state.level || 1);
       const nextLvl = currentLvl + 1;
-      if (nextLvl > 30) {
-        Router.navigate('levelselect');
+      const maxLvl = mode === 'colorsort' ? 30 : 20;
+      if (nextLvl > maxLvl) {
+        Router.navigate('levelselect', { mode });
         return;
       }
-      Storage.clearActiveGame('colorsort');
+      Storage.clearActiveGame(mode);
       GameLauncher.destroy();
-      Router.navigate('play', { mode: 'colorsort', difficulty: nextLvl });
+      Router.navigate('play', { mode, difficulty: nextLvl });
     }
   });
 
@@ -389,9 +537,9 @@ function showVictoryModal(mode: GameMode, state: any): void {
     e.preventDefault();
     SoundManager.play('click');
     Modal.close();
-    Storage.clearActiveGame('colorsort');
+    Storage.clearActiveGame(mode);
     GameLauncher.destroy();
-    Router.navigate('levelselect');
+    Router.navigate('levelselect', { mode });
   });
 
   modalEl.querySelector('#modal-next-puzzle')?.addEventListener('click', (e) => {
@@ -428,7 +576,6 @@ function showVictoryModal(mode: GameMode, state: any): void {
 }
 
 function showGameOverModal(mode: GameMode, state: any): void {
-  // Prevent duplicate modals if already open
   if (document.getElementById('active-modal')) {
     return;
   }

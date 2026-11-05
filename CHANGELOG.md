@@ -5,6 +5,36 @@ All notable changes to **MoPuzzle** will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-11-05
+
+### Added
+- **Expansion to 6 Games**:
+  - Upgraded MoPuzzle from 4 games to 6 games in one unified browser platform while preserving all existing games, player progression, high scores, brand identity, and theme options.
+- **Game 5: Mahjong Solitaire**:
+  - Built-in 20 guaranteed-solvable 3D layered layouts (Pyramid, Cross, Butterfly, Fortress, Gateway, Temple, Arena, Castle, etc.) spanning Easy (24-32 tiles), Medium (36-56 tiles), and Hard (60-72 tiles).
+  - Strict classic Mahjong rules: a tile is selectable only when it is not covered by any upper-layer tile and has at least one lateral (left or right) side open.
+  - Non-copyrighted original geometric symbol suits: `circle` (1..9), `bamboo` (1..9), `gem` (1..9), `wind` (E, S, W, N), and celestial `star` (Sun, Moon, Star, Comet).
+  - 100% Guaranteed Solvability: Layouts populated through reverse-simulation pair generation.
+  - In-game capabilities: intelligent Hint system, Undo history stack, board Shuffle / Redeal ensuring available pairs, and automatic stuck detection.
+  - Dedicated level selector (1 to 20), responsive canvas scaling, and 3D elevation tweens.
+- **Game 6: Word Search**:
+  - Full 8-compass directional word placement: East, West, South, North, South-East, North-West, North-East, and South-West.
+  - 40 curated levels: 20 levels in English and 20 in Indonesian across 8 vibrant categories (Animals, Nature, Technology, Food, Sports, Space, Countries, Everyday Objects).
+  - Independent level progression and persistence for English and Indonesian.
+  - Drag-and-drop line selection and touch tap support on desktop and mobile viewports with collinear straight-line validation.
+  - Dynamic translucent capsule path highlights and responsive target word chips.
+  - In-game Hint system revealing target word start locations.
+- **System & Architecture Updates**:
+  - **Storage Schema v2**: Upgraded storage schema with backward-compatible automatic migration from v1 to v2, adding `mahjongUnlockedLevel`, `wordSearchUnlockedLevelEn`, `wordSearchUnlockedLevelId`, and new mode statistics.
+  - **10 New Achievements**: Added 5 achievements for Mahjong Solitaire (`mahjong_first_pair`, `mahjong_clear_board`, `mahjong_5_levels`, `mahjong_no_hint`, `mahjong_all_levels`) and 5 for Word Search (`word_first_found`, `word_first_puzzle`, `word_100_found`, `word_no_hint`, `word_all_levels`). Total achievements increased to 24.
+  - **Localization**: Added comprehensive bilingual English and Indonesian translations for all new game modes, rules, HUD items, categories, and achievements.
+  - **Responsive 6-Card Grid**: Updated homepage layout with 3-column desktop, 2-column tablet, and compact mobile views.
+  - **PWA Service Worker**: Updated cache name to `mopuzzle-cache-v1.1.0`.
+- **Testing & Quality Assurance**:
+  - Added 17 new Vitest unit tests for Mahjong and Word Search engines (total: 63 tests across 7 test suites).
+  - Added full Playwright E2E test suites (`e2e/mahjong-gameplay.spec.ts` and `e2e/wordsearch-gameplay.spec.ts`) verified across Desktop Chrome, Desktop Edge, Mobile Chrome, and iPhone 14.
+  - Re-verified all existing regression suites for Merge Numbers, Color Sort, Slide Puzzle, and Block Fit.
+
 ## [1.0.3] - 2026-11-05
 
 ### Fixed

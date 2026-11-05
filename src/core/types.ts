@@ -1,4 +1,4 @@
-export type GameMode = 'merge' | 'colorsort' | 'slide' | 'blockfit';
+export type GameMode = 'merge' | 'colorsort' | 'slide' | 'blockfit' | 'mahjong' | 'wordsearch';
 
 export type Language = 'en' | 'id';
 export type Theme = 'light' | 'dark';
@@ -27,6 +27,8 @@ export interface ModeStatsMap {
   colorsort: GameStats;
   slide: GameStats;
   blockfit: GameStats;
+  mahjong: GameStats;
+  wordsearch: GameStats;
 }
 
 export interface Achievement {
@@ -46,6 +48,9 @@ export interface SaveDataSchema {
   stats: ModeStatsMap;
   achievements: Record<string, { unlockedAt: string | null; progress: number }>;
   colorSortUnlockedLevel: number;
+  mahjongUnlockedLevel: number;
+  wordSearchUnlockedLevelEn: number;
+  wordSearchUnlockedLevelId: number;
   activeGames: {
     merge?: {
       board: number[][];
@@ -84,6 +89,27 @@ export interface SaveDataSchema {
       won?: boolean;
       gameOver?: boolean;
       currentPieces: { id: string; name?: string; matrix: number[][]; color: string; used: boolean }[];
+    };
+    mahjong?: {
+      level: number;
+      tiles: any[];
+      selectedTileId: string | null;
+      moves: number;
+      elapsedSeconds: number;
+      won?: boolean;
+      gameOver?: boolean;
+      history: { tile1Id: string; tile2Id: string }[];
+    };
+    wordsearch?: {
+      level: number;
+      language: Language;
+      category: string;
+      grid: string[][];
+      targetWords: { word: string; found: boolean; path?: [number, number][] }[];
+      foundWords: string[];
+      elapsedSeconds: number;
+      won?: boolean;
+      gameOver?: boolean;
     };
   };
 }

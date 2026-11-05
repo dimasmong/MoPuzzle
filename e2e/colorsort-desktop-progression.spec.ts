@@ -185,7 +185,7 @@ test.describe('MoPuzzle — Color Sort Desktop Progression & Multi-Level Audit',
     const response = await page.request.get('/sw.js');
     expect(response.status()).toBe(200);
     const swContent = await response.text();
-    expect(swContent).toContain('mopuzzle-cache-v1.0.3');
+    expect(swContent).toContain('mopuzzle-cache-v1.1.0');
     expect(swContent).toContain('isNavigation');
     expect(swContent).toContain('SKIP_WAITING');
   });

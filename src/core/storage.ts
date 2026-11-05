@@ -1,4 +1,4 @@
-import { SaveDataSchema, UserSettings, ModeStatsMap, GameMode, GameStats } from './types';
+import { SaveDataSchema, UserSettings, ModeStatsMap, GameMode, GameStats, Language } from './types';
 import { Diagnostics } from './diagnostics';
 
 const DB_NAME = 'MoPuzzleDB';
@@ -20,15 +20,20 @@ const DEFAULT_STATS: ModeStatsMap = {
   merge: { gamesPlayed: 0, gamesWon: 0, highScore: 0, bestTimeSeconds: 0, totalMoves: 0, extraStats: { tile2048Count: 0 } },
   colorsort: { gamesPlayed: 0, gamesWon: 0, highScore: 0, bestTimeSeconds: 0, totalMoves: 0, extraStats: { totalPours: 0, maxLevelReached: 1 } },
   slide: { gamesPlayed: 0, gamesWon: 0, highScore: 0, bestTimeSeconds: 0, totalMoves: 0, extraStats: { puzzlesSolved: 0 } },
-  blockfit: { gamesPlayed: 0, gamesWon: 0, highScore: 0, bestTimeSeconds: 0, totalMoves: 0, extraStats: { linesCleared: 0, maxCombo: 0 } }
+  blockfit: { gamesPlayed: 0, gamesWon: 0, highScore: 0, bestTimeSeconds: 0, totalMoves: 0, extraStats: { linesCleared: 0, maxCombo: 0 } },
+  mahjong: { gamesPlayed: 0, gamesWon: 0, highScore: 0, bestTimeSeconds: 0, totalMoves: 0, extraStats: { pairsMatched: 0, maxLevelReached: 1 } },
+  wordsearch: { gamesPlayed: 0, gamesWon: 0, highScore: 0, bestTimeSeconds: 0, totalMoves: 0, extraStats: { wordsFound: 0, maxLevelReached: 1 } }
 };
 
 export const DEFAULT_SAVE_DATA: SaveDataSchema = {
-  version: 1,
+  version: 2,
   settings: DEFAULT_SETTINGS,
   stats: DEFAULT_STATS,
   achievements: {},
   colorSortUnlockedLevel: 1,
+  mahjongUnlockedLevel: 1,
+  wordSearchUnlockedLevelEn: 1,
+  wordSearchUnlockedLevelId: 1,
   activeGames: {}
 };
 
@@ -73,7 +78,10 @@ class StorageService {
         stats: { ...idbData.stats, ...localData.stats },
         activeGames: { ...(idbData.activeGames || {}), ...(localData.activeGames || {}) },
         achievements: { ...(idbData.achievements || {}), ...(localData.achievements || {}) },
-        colorSortUnlockedLevel: Math.max(idbData.colorSortUnlockedLevel || 1, localData.colorSortUnlockedLevel || 1)
+        colorSortUnlockedLevel: Math.max(idbData.colorSortUnlockedLevel || 1, localData.colorSortUnlockedLevel || 1),
+        mahjongUnlockedLevel: Math.max(idbData.mahjongUnlockedLevel || 1, localData.mahjongUnlockedLevel || 1),
+        wordSearchUnlockedLevelEn: Math.max(idbData.wordSearchUnlockedLevelEn || 1, localData.wordSearchUnlockedLevelEn || 1),
+        wordSearchUnlockedLevelId: Math.max(idbData.wordSearchUnlockedLevelId || 1, localData.wordSearchUnlockedLevelId || 1)
       };
     } else {
       mergedData = idbData || localData;
@@ -244,9 +252,44 @@ class StorageService {
     const clamped = Math.min(30, Math.max(1, lvl));
     if (clamped > data.colorSortUnlockedLevel) {
       data.colorSortUnlockedLevel = clamped;
-      Diagnostics.log('set_unlocked_level', { previous: data.colorSortUnlockedLevel, updated: clamped });
+      Diagnostics.log('set_unlocked_level_colorsort', { previous: data.colorSortUnlockedLevel, updated: clamped });
       await this.persist();
     }
+  }
+
+  public async setUnlockedMahjongLevel(lvl: number): Promise<void> {
+    const data = this.getData();
+    const clamped = Math.min(20, Math.max(1, lvl));
+    if (clamped > (data.mahjongUnlockedLevel || 1)) {
+      data.mahjongUnlockedLevel = clamped;
+      Diagnostics.log('set_unlocked_level_mahjong', { previous: data.mahjongUnlockedLevel, updated: clamped });
+      await this.persist();
+    }
+  }
+
+  public async setUnlockedWordSearchLevel(a: number | Language, b?: number | Language): Promise<void> {
+    const lvl = typeof a === 'number' ? a : (typeof b === 'number' ? b : 1);
+    const lang: Language = typeof a === 'string' ? a : (typeof b === 'string' ? b : 'en');
+    const data = this.getData();
+    const clamped = Math.min(20, Math.max(1, lvl));
+    if (lang === 'id') {
+      if (clamped > (data.wordSearchUnlockedLevelId || 1)) {
+        data.wordSearchUnlockedLevelId = clamped;
+        Diagnostics.log('set_unlocked_level_wordsearch_id', { previous: data.wordSearchUnlockedLevelId, updated: clamped });
+        await this.persist();
+      }
+    } else {
+      if (clamped > (data.wordSearchUnlockedLevelEn || 1)) {
+        data.wordSearchUnlockedLevelEn = clamped;
+        Diagnostics.log('set_unlocked_level_wordsearch_en', { previous: data.wordSearchUnlockedLevelEn, updated: clamped });
+        await this.persist();
+      }
+    }
+  }
+
+  public getUnlockedWordSearchLevel(lang: Language = 'en'): number {
+    const data = this.getData();
+    return lang === 'id' ? (data.wordSearchUnlockedLevelId || 1) : (data.wordSearchUnlockedLevelEn || 1);
   }
 
   public async resetAll(): Promise<void> {
@@ -259,7 +302,7 @@ class StorageService {
       return JSON.parse(JSON.stringify(DEFAULT_SAVE_DATA));
     }
 
-    const version = typeof loaded.version === 'number' ? loaded.version : 1;
+    const version = 2;
     const settings: UserSettings = {
       ...DEFAULT_SETTINGS,
       ...(loaded.settings || {})
@@ -269,12 +312,26 @@ class StorageService {
       merge: { ...DEFAULT_STATS.merge, ...(loaded.stats?.merge || {}) },
       colorsort: { ...DEFAULT_STATS.colorsort, ...(loaded.stats?.colorsort || {}) },
       slide: { ...DEFAULT_STATS.slide, ...(loaded.stats?.slide || {}) },
-      blockfit: { ...DEFAULT_STATS.blockfit, ...(loaded.stats?.blockfit || {}) }
+      blockfit: { ...DEFAULT_STATS.blockfit, ...(loaded.stats?.blockfit || {}) },
+      mahjong: { ...DEFAULT_STATS.mahjong, ...(loaded.stats?.mahjong || {}) },
+      wordsearch: { ...DEFAULT_STATS.wordsearch, ...(loaded.stats?.wordsearch || {}) }
     };
 
     const achievements = loaded.achievements && typeof loaded.achievements === 'object' ? loaded.achievements : {};
     const colorSortUnlockedLevel = typeof loaded.colorSortUnlockedLevel === 'number' && loaded.colorSortUnlockedLevel >= 1
       ? Math.min(30, Math.max(1, loaded.colorSortUnlockedLevel))
+      : 1;
+
+    const mahjongUnlockedLevel = typeof loaded.mahjongUnlockedLevel === 'number' && loaded.mahjongUnlockedLevel >= 1
+      ? Math.min(20, Math.max(1, loaded.mahjongUnlockedLevel))
+      : 1;
+
+    const wordSearchUnlockedLevelEn = typeof loaded.wordSearchUnlockedLevelEn === 'number' && loaded.wordSearchUnlockedLevelEn >= 1
+      ? Math.min(20, Math.max(1, loaded.wordSearchUnlockedLevelEn))
+      : 1;
+
+    const wordSearchUnlockedLevelId = typeof loaded.wordSearchUnlockedLevelId === 'number' && loaded.wordSearchUnlockedLevelId >= 1
+      ? Math.min(20, Math.max(1, loaded.wordSearchUnlockedLevelId))
       : 1;
 
     // Sanitize activeGames: completely purge any active games where won or gameOver is true
@@ -286,7 +343,13 @@ class StorageService {
       }
     }
 
-    Diagnostics.log('validate_and_migrate', { colorSortUnlockedLevel, activeGamesCount: Object.keys(activeGames).length });
+    Diagnostics.log('validate_and_migrate_v2', {
+      colorSortUnlockedLevel,
+      mahjongUnlockedLevel,
+      wordSearchUnlockedLevelEn,
+      wordSearchUnlockedLevelId,
+      activeGamesCount: Object.keys(activeGames).length
+    });
 
     return {
       version,
@@ -294,6 +357,9 @@ class StorageService {
       stats,
       achievements,
       colorSortUnlockedLevel,
+      mahjongUnlockedLevel,
+      wordSearchUnlockedLevelEn,
+      wordSearchUnlockedLevelId,
       activeGames
     };
   }

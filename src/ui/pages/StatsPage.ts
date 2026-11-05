@@ -5,14 +5,17 @@ import { GameMode } from '../../core/types';
 export function renderStatsPage(): string {
   const data = Storage.getData();
   const stats = data.stats;
+  const currentLang = data.settings.language || 'en';
 
-  const totalPlayed = stats.merge.gamesPlayed + stats.colorsort.gamesPlayed + stats.slide.gamesPlayed + stats.blockfit.gamesPlayed;
-  const totalWins = stats.merge.gamesWon + stats.colorsort.gamesWon + stats.slide.gamesWon + stats.blockfit.gamesWon;
+  const modes: GameMode[] = ['merge', 'colorsort', 'slide', 'blockfit', 'mahjong', 'wordsearch'];
+
+  const totalPlayed = modes.reduce((acc, m) => acc + (stats[m]?.gamesPlayed || 0), 0);
+  const totalWins = modes.reduce((acc, m) => acc + (stats[m]?.gamesWon || 0), 0);
   const winRate = totalPlayed > 0 ? Math.round((totalWins / totalPlayed) * 100) : 0;
-  const totalMoves = stats.merge.totalMoves + stats.colorsort.totalMoves + stats.slide.totalMoves + stats.blockfit.totalMoves;
+  const totalMoves = modes.reduce((acc, m) => acc + (stats[m]?.totalMoves || 0), 0);
 
   const renderModeStatsCard = (mode: GameMode, titleKey: string, icon: string, extraItems: { label: string; value: string | number }[]) => {
-    const s = stats[mode];
+    const s = stats[mode] || { gamesPlayed: 0, gamesWon: 0, totalMoves: 0, highScore: 0, bestTimeSeconds: 0 };
     return `
       <div class="card" style="margin-bottom: 14px;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
@@ -84,7 +87,19 @@ export function renderStatsPage(): string {
       <!-- 4. Block Fit Stats -->
       ${renderModeStatsCard('blockfit', 'blockFitTitle', '🧱', [
         { label: I18n.t('highScore'), value: stats.blockfit.highScore },
-        { label: I18n.t('linesCleared'), value: stats.blockfit.extraStats.linesCleared || 0 }
+        { label: I18n.t('linesCleared'), value: stats.blockfit.extraStats?.linesCleared || 0 }
+      ])}
+
+      <!-- 5. Mahjong Solitaire Stats -->
+      ${renderModeStatsCard('mahjong', 'mahjongTitle', '🀄', [
+        { label: I18n.t('maxLevel'), value: data.mahjongUnlockedLevel || 1 },
+        { label: I18n.t('bestTime'), value: stats.mahjong?.bestTimeSeconds > 0 ? `${stats.mahjong.bestTimeSeconds}s` : '-' }
+      ])}
+
+      <!-- 6. Word Search Stats -->
+      ${renderModeStatsCard('wordsearch', 'wordSearchTitle', '🔍', [
+        { label: I18n.t('maxLevel'), value: Storage.getUnlockedWordSearchLevel(currentLang) || 1 },
+        { label: I18n.t('puzzlesSolved'), value: stats.wordsearch?.gamesWon || 0 }
       ])}
     </div>
   `;

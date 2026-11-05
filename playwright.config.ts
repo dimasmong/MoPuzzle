@@ -7,7 +7,7 @@ export default defineConfig({
   workers: 1,
   reporter: 'list',
   use: {
-    baseURL: 'http://localhost:4173',
+    baseURL: 'http://localhost:4180',
     trace: 'on-first-retry',
     viewport: { width: 1280, height: 800 }
   },
@@ -30,8 +30,8 @@ export default defineConfig({
     }
   ],
   webServer: {
-    command: 'npm.cmd run preview -- --port 4173',
-    port: 4173,
-    reuseExistingServer: true
+    command: 'npm.cmd run preview -- --port 4180',
+    port: 4180,
+    reuseExistingServer: false
   }
 });

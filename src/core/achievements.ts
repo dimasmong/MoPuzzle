@@ -99,13 +99,95 @@ export const ACHIEVEMENT_DEFINITIONS: Omit<Achievement, 'unlockedAt' | 'progress
     category: 'blockfit',
     maxProgress: 50
   },
+  // Mahjong Solitaire Achievements
+  {
+    id: 'mahjong_first_pair',
+    titleKey: 'achMahjongFirstPairTitle',
+    descKey: 'achMahjongFirstPairDesc',
+    icon: '🀄',
+    category: 'mahjong',
+    maxProgress: 1
+  },
+  {
+    id: 'mahjong_clear_board',
+    titleKey: 'achMahjongClearBoardTitle',
+    descKey: 'achMahjongClearBoardDesc',
+    icon: '🎴',
+    category: 'mahjong',
+    maxProgress: 1
+  },
+  {
+    id: 'mahjong_5_levels',
+    titleKey: 'achMahjong5LevelsTitle',
+    descKey: 'achMahjong5LevelsDesc',
+    icon: '🏯',
+    category: 'mahjong',
+    maxProgress: 5
+  },
+  {
+    id: 'mahjong_no_hint',
+    titleKey: 'achMahjongNoHintTitle',
+    descKey: 'achMahjongNoHintDesc',
+    icon: '👁️',
+    category: 'mahjong',
+    maxProgress: 1
+  },
+  {
+    id: 'mahjong_all_levels',
+    titleKey: 'achMahjongAllLevelsTitle',
+    descKey: 'achMahjongAllLevelsDesc',
+    icon: '👑',
+    category: 'mahjong',
+    maxProgress: 20
+  },
+  // Word Search Achievements
+  {
+    id: 'word_first_found',
+    titleKey: 'achWordFirstFoundTitle',
+    descKey: 'achWordFirstFoundDesc',
+    icon: '🔍',
+    category: 'wordsearch',
+    maxProgress: 1
+  },
+  {
+    id: 'word_first_puzzle',
+    titleKey: 'achWordFirstPuzzleTitle',
+    descKey: 'achWordFirstPuzzleDesc',
+    icon: '📜',
+    category: 'wordsearch',
+    maxProgress: 1
+  },
+  {
+    id: 'word_100_found',
+    titleKey: 'achWord100FoundTitle',
+    descKey: 'achWord100FoundDesc',
+    icon: '📚',
+    category: 'wordsearch',
+    maxProgress: 100
+  },
+  {
+    id: 'word_no_hint',
+    titleKey: 'achWordNoHintTitle',
+    descKey: 'achWordNoHintDesc',
+    icon: '💡',
+    category: 'wordsearch',
+    maxProgress: 1
+  },
+  {
+    id: 'word_all_levels',
+    titleKey: 'achWordAllLevelsTitle',
+    descKey: 'achWordAllLevelsDesc',
+    icon: '🎓',
+    category: 'wordsearch',
+    maxProgress: 20
+  },
   {
     id: 'puzzler_all',
     titleKey: 'achPuzzlerTitle',
     descKey: 'achPuzzlerDesc',
     icon: '🌟',
     category: 'general',
-    maxProgress: 4
+    maxProgress: 6
   },
   {
     id: 'dedicated_500',

@@ -3,12 +3,26 @@ import { Storage } from '../../core/storage';
 import { SoundManager } from '../../audio/SoundManager';
 import { Router } from '../router';
 import { Icons } from '../icons';
+import { GameMode } from '../../core/types';
 
-export function renderLevelSelectPage(): string {
+export function renderLevelSelectPage(mode: GameMode = 'colorsort'): string {
   const data = Storage.getData();
-  const unlocked = data.colorSortUnlockedLevel;
+  const currentLang = data.settings.language || 'en';
 
-  const totalLevels = 30;
+  let unlocked = 1;
+  let totalLevels = 20;
+
+  if (mode === 'colorsort') {
+    unlocked = data.colorSortUnlockedLevel || 1;
+    totalLevels = 30;
+  } else if (mode === 'mahjong') {
+    unlocked = data.mahjongUnlockedLevel || 1;
+    totalLevels = 20;
+  } else if (mode === 'wordsearch') {
+    unlocked = Storage.getUnlockedWordSearchLevel(currentLang) || 1;
+    totalLevels = 20;
+  }
+
   let buttonsHtml = '';
 
   for (let lvl = 1; lvl <= totalLevels; lvl++) {
@@ -51,7 +65,7 @@ export function renderLevelSelectPage(): string {
         </button>
         <div>
           <h2 style="font-size: 20px; font-weight: 800;">${I18n.t('selectLevel')}</h2>
-          <p style="font-size: 12px; color: var(--text-muted);">${I18n.t('colorSortTitle')}</p>
+          <p style="font-size: 12px; color: var(--text-muted);">${I18n.t((mode + 'Title') as any)}</p>
         </div>
       </div>
 
@@ -64,10 +78,10 @@ export function renderLevelSelectPage(): string {
   `;
 }
 
-export function bindLevelSelectEvents(container: HTMLElement): void {
+export function bindLevelSelectEvents(container: HTMLElement, mode: GameMode = 'colorsort'): void {
   container.querySelector('#levelselect-back-btn')?.addEventListener('click', () => {
     SoundManager.play('click');
-    Router.navigate('details', { mode: 'colorsort' });
+    Router.navigate('details', { mode });
   });
 
   container.querySelectorAll('[data-level]').forEach(el => {
@@ -75,7 +89,7 @@ export function bindLevelSelectEvents(container: HTMLElement): void {
       const lvl = Number(el.getAttribute('data-level'));
       if (lvl) {
         SoundManager.play('click');
-        Router.navigate('play', { mode: 'colorsort', difficulty: lvl });
+        Router.navigate('play', { mode, difficulty: lvl });
       }
     });
   });

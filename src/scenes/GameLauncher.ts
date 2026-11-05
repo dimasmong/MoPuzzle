@@ -4,6 +4,8 @@ import { MergeScene } from './MergeScene';
 import { ColorSortScene } from './ColorSortScene';
 import { SlideScene } from './SlideScene';
 import { BlockFitScene } from './BlockFitScene';
+import { MahjongScene } from './MahjongScene';
+import { WordSearchScene } from './WordSearchScene';
 import { Diagnostics } from '../core/diagnostics';
 
 export class GameLauncher {
@@ -52,6 +54,16 @@ export class GameLauncher {
       case 'blockfit':
         sceneClass = BlockFitScene;
         sceneKey = 'BlockFitScene';
+        break;
+      case 'mahjong':
+        sceneClass = MahjongScene;
+        sceneKey = 'MahjongScene';
+        sceneInitData.level = options.difficulty || 1;
+        break;
+      case 'wordsearch':
+        sceneClass = WordSearchScene;
+        sceneKey = 'WordSearchScene';
+        sceneInitData.level = options.difficulty || 1;
         break;
     }
 
@@ -141,6 +153,13 @@ export class GameLauncher {
     return false;
   }
 
+  public static shuffle(): boolean {
+    if (this.currentScene && typeof (this.currentScene as any).shuffle === 'function') {
+      return (this.currentScene as any).shuffle();
+    }
+    return false;
+  }
+
   public static hint(): any {
     if (this.currentScene && typeof (this.currentScene as any).showHint === 'function') {
       return (this.currentScene as any).showHint();
@@ -162,4 +181,8 @@ export class GameLauncher {
       this.currentScene = null;
     }
   }
+}
+
+if (typeof window !== 'undefined') {
+  (window as any).__MOPUZZLE_LAUNCHER__ = GameLauncher;
 }

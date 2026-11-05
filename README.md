@@ -40,7 +40,7 @@ A complete, modern browser-based puzzle game collection crafted with TypeScript,
 
 ---
 
-## 🧩 The 4 Game Modes
+## 🧩 The 6 Game Modes
 
 ### 1. Merge Numbers (2048 Strategy)
 - Classic 4×4 board with swipe gestures and keyboard controls (`Arrow Keys` / `WASD`).
@@ -66,6 +66,20 @@ A complete, modern browser-based puzzle game collection crafted with TypeScript,
 - Drag-and-drop placement with real-time green/red placement grid highlight preview.
 - Simultaneous row and column clearing with combo multiplier scoring.
 - Exact game-over detection triggered only when none of the remaining pieces can fit anywhere on the board.
+
+### 5. Mahjong Solitaire (Tile Matching)
+- 20 guaranteed-solvable 3D layered layouts (Easy 24-32 tiles, Medium 36-56 tiles, Hard 60-72 tiles).
+- Strict traditional Mahjong rules: tiles must be unblocked from above and open on at least one lateral (left/right) flank.
+- Geometric original tile suits: Circles, Bamboos, Gems, Winds, and Celestial Stars.
+- Reverse-simulation pair generation guaranteeing complete board solvability.
+- Intelligent Hint system, Undo history stack, and board Shuffle/Redeal.
+
+### 6. Word Search (Vocabulary Grid Challenge)
+- 8-compass directional word searches: Horizontal (E/W), Vertical (S/N), Diagonal (SE/NW, NE/SW).
+- 40 curated levels across 8 categories: 20 in English and 20 in Indonesian.
+- Independent level progression and save state for English and Indonesian.
+- Fluid drag-and-drop and touch letter selection with collinear geometric snapping.
+- Translucent capsule path highlights and responsive target word chips.
 
 ---
 
@@ -93,8 +107,8 @@ Switchable instantly via the header icon or the Settings page.
 
 - High-performance asynchronous storage powered by **IndexedDB**.
 - Automatic fallback to **LocalStorage** when IndexedDB is restricted.
-- Schema versioning (v1) with corrupted data recovery and schema validation.
-- Independent progress saving for all four game modes, statistics, and 14 earnable achievements.
+- Schema versioning (v2) with automatic migration from v1, corrupted data recovery, and schema validation.
+- Independent progress saving for all six game modes, statistics, and 24 earnable achievements.
 - Reset game data with safe confirmation dialog.
 
 ---
