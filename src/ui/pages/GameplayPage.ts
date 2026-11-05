@@ -7,6 +7,7 @@ import { GameMode } from '../../core/types';
 import { GameLauncher } from '../../scenes/GameLauncher';
 import { openPauseModal } from './PauseModal';
 import { Modal } from '../components';
+import { Diagnostics } from '../../core/diagnostics';
 
 export function renderGameplayPage(mode: GameMode, difficulty?: any): string {
   const data = Storage.getData();
@@ -343,9 +344,12 @@ function showVictoryModal(mode: GameMode, state: any): void {
     </div>
   `;
 
+  Diagnostics.log('show_victory_modal', { mode, level: state.level, moves: state.moves });
   const modalEl = Modal.open(title, content, actions);
 
-  modalEl.querySelector('#modal-victory-home')?.addEventListener('click', () => {
+  modalEl.querySelector('#modal-victory-home')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     SoundManager.play('click');
     Modal.close();
     Storage.clearActiveGame(mode);
@@ -353,12 +357,23 @@ function showVictoryModal(mode: GameMode, state: any): void {
     Router.navigate('home');
   });
 
-  modalEl.querySelector('#modal-next-level')?.addEventListener('click', () => {
+  const nextBtn = modalEl.querySelector('#modal-next-level') as HTMLButtonElement | null;
+  nextBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (nextBtn.disabled) return;
+    nextBtn.disabled = true;
+
+    Diagnostics.log('modal_next_level_clicked', { mode, level: state.level });
     SoundManager.play('click');
     Modal.close();
+
     const advanced = GameLauncher.nextLevel();
+    Diagnostics.log('modal_next_level_advancement_result', { advanced });
+
     if (!advanced) {
-      const nextLvl = (state.level || 1) + 1;
+      const currentLvl = (state.level || 1);
+      const nextLvl = currentLvl + 1;
       if (nextLvl > 30) {
         Router.navigate('levelselect');
         return;
@@ -369,7 +384,9 @@ function showVictoryModal(mode: GameMode, state: any): void {
     }
   });
 
-  modalEl.querySelector('#modal-select-level')?.addEventListener('click', () => {
+  modalEl.querySelector('#modal-select-level')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     SoundManager.play('click');
     Modal.close();
     Storage.clearActiveGame('colorsort');
@@ -377,25 +394,33 @@ function showVictoryModal(mode: GameMode, state: any): void {
     Router.navigate('levelselect');
   });
 
-  modalEl.querySelector('#modal-next-puzzle')?.addEventListener('click', () => {
+  modalEl.querySelector('#modal-next-puzzle')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     SoundManager.play('click');
     Modal.close();
     GameLauncher.restart();
   });
 
-  modalEl.querySelector('#modal-merge-restart')?.addEventListener('click', () => {
+  modalEl.querySelector('#modal-merge-restart')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     SoundManager.play('click');
     Modal.close();
     GameLauncher.restart();
   });
 
-  modalEl.querySelector('#modal-merge-continue')?.addEventListener('click', () => {
+  modalEl.querySelector('#modal-merge-continue')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     SoundManager.play('click');
     Modal.close();
     GameLauncher.continuePlaying();
   });
 
-  modalEl.querySelector('#modal-play-again')?.addEventListener('click', () => {
+  modalEl.querySelector('#modal-play-again')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     SoundManager.play('click');
     Modal.close();
     GameLauncher.restart();

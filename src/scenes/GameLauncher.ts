@@ -4,6 +4,7 @@ import { MergeScene } from './MergeScene';
 import { ColorSortScene } from './ColorSortScene';
 import { SlideScene } from './SlideScene';
 import { BlockFitScene } from './BlockFitScene';
+import { Diagnostics } from '../core/diagnostics';
 
 export class GameLauncher {
   public static onStateChangeCallback: ((state: any) => void) | null = null;
@@ -119,9 +120,16 @@ export class GameLauncher {
   }
 
   public static nextLevel(): boolean {
+    Diagnostics.log('launcher_next_level_call', {
+      hasCurrentScene: !!this.currentScene,
+      sceneName: this.currentScene?.constructor?.name
+    });
     if (this.currentScene && typeof (this.currentScene as any).advanceToNextLevel === 'function') {
-      return (this.currentScene as any).advanceToNextLevel();
+      const res = (this.currentScene as any).advanceToNextLevel();
+      Diagnostics.log('launcher_next_level_result', { result: res });
+      return res;
     }
+    Diagnostics.log('launcher_next_level_no_scene_fallback');
     return false;
   }
 

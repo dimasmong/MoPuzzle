@@ -101,7 +101,7 @@ export function renderSettingsPage(): string {
       <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <div style="font-size: 14px; font-weight: 700;">${I18n.t('aboutTitle')}</div>
-          <div style="font-size: 12px; color: var(--text-muted);">MoPuzzle v1.0.2 — Think. Solve. Enjoy.</div>
+          <div style="font-size: 12px; color: var(--text-muted);">MoPuzzle v1.0.3 — Think. Solve. Enjoy.</div>
         </div>
         <button class="btn btn-secondary" id="settings-about-btn" style="padding: 6px 14px; font-size: 13px;">
           <span>${I18n.t('aboutTitle')} ➔</span>

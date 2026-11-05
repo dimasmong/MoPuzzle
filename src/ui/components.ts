@@ -55,13 +55,21 @@ export class Modal {
 
     document.body.appendChild(overlay);
 
-    overlay.querySelector('#modal-close-btn')?.addEventListener('click', () => {
+    // Prevent pointer events from falling through to the canvas underneath
+    overlay.addEventListener('pointerdown', (e) => e.stopPropagation());
+    overlay.addEventListener('pointerup', (e) => e.stopPropagation());
+    overlay.addEventListener('mousedown', (e) => e.stopPropagation());
+    overlay.addEventListener('mouseup', (e) => e.stopPropagation());
+
+    overlay.querySelector('#modal-close-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
       SoundManager.play('click');
       this.close();
     });
 
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) {
+        e.stopPropagation();
         SoundManager.play('click');
         this.close();
       }

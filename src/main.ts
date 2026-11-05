@@ -7,6 +7,7 @@ import { Achievements } from './core/achievements';
 import { Toast } from './ui/components';
 import { Router } from './ui/router';
 import { GameLauncher } from './scenes/GameLauncher';
+import { Diagnostics } from './core/diagnostics';
 
 async function bootstrap() {
   const root = document.getElementById('app');
@@ -43,17 +44,44 @@ async function bootstrap() {
   window.addEventListener('pointerdown', enableAudioOnce);
   window.addEventListener('keydown', enableAudioOnce);
 
-  // 6. Register Service Worker for PWA
+  // 6. Register Service Worker for PWA with automatic update activation
   if ('serviceWorker' in navigator && import.meta.env.PROD) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('/sw.js').then(
         reg => {
-          console.log('[MoPuzzle PWA] ServiceWorker registered with scope:', reg.scope);
+          Diagnostics.log('sw_registered', { scope: reg.scope });
+
+          // If a new worker is waiting, tell it to skipWaiting
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
+
+          // Listen for new service worker installation
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                Diagnostics.log('sw_update_available');
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+              }
+            });
+          });
         },
         err => {
           console.warn('[MoPuzzle PWA] ServiceWorker registration failed:', err);
         }
       );
+
+      // Auto-reload once when the new controller takes over to prevent mixing old and new bundles
+      let isRefreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!isRefreshing) {
+          isRefreshing = true;
+          Diagnostics.log('sw_controller_changed');
+          window.location.reload();
+        }
+      });
     });
   }
 

@@ -1,4 +1,5 @@
 import { SaveDataSchema, UserSettings, ModeStatsMap, GameMode, GameStats } from './types';
+import { Diagnostics } from './diagnostics';
 
 const DB_NAME = 'MoPuzzleDB';
 const DB_VERSION = 1;
@@ -211,25 +212,39 @@ class StorageService {
 
   public async saveActiveGame(mode: GameMode, state: any): Promise<void> {
     const data = this.getData();
-    data.activeGames[mode] = state;
+    if (!state || state.won || state.gameOver) {
+      // Completed or empty games must never be stored in active games
+      delete data.activeGames[mode];
+    } else {
+      data.activeGames[mode] = state;
+    }
+    Diagnostics.log('save_active_game', { mode, hasActive: !!data.activeGames[mode], level: state?.level });
     await this.persist();
   }
 
   public getActiveGame<T>(mode: GameMode): T | null {
     const data = this.getData();
-    return (data.activeGames[mode] as T) || null;
+    const active = data.activeGames[mode];
+    if (active && (active.won || active.gameOver)) {
+      delete data.activeGames[mode];
+      return null;
+    }
+    return (active as T) || null;
   }
 
   public async clearActiveGame(mode: GameMode): Promise<void> {
     const data = this.getData();
     delete data.activeGames[mode];
+    Diagnostics.log('clear_active_game', { mode });
     await this.persist();
   }
 
   public async setUnlockedColorSortLevel(lvl: number): Promise<void> {
     const data = this.getData();
-    if (lvl > data.colorSortUnlockedLevel) {
-      data.colorSortUnlockedLevel = lvl;
+    const clamped = Math.min(30, Math.max(1, lvl));
+    if (clamped > data.colorSortUnlockedLevel) {
+      data.colorSortUnlockedLevel = clamped;
+      Diagnostics.log('set_unlocked_level', { previous: data.colorSortUnlockedLevel, updated: clamped });
       await this.persist();
     }
   }
@@ -259,10 +274,19 @@ class StorageService {
 
     const achievements = loaded.achievements && typeof loaded.achievements === 'object' ? loaded.achievements : {};
     const colorSortUnlockedLevel = typeof loaded.colorSortUnlockedLevel === 'number' && loaded.colorSortUnlockedLevel >= 1
-      ? loaded.colorSortUnlockedLevel
+      ? Math.min(30, Math.max(1, loaded.colorSortUnlockedLevel))
       : 1;
 
-    const activeGames = loaded.activeGames && typeof loaded.activeGames === 'object' ? loaded.activeGames : {};
+    // Sanitize activeGames: completely purge any active games where won or gameOver is true
+    const rawActiveGames = loaded.activeGames && typeof loaded.activeGames === 'object' ? loaded.activeGames : {};
+    const activeGames: Record<string, any> = {};
+    for (const [mode, game] of Object.entries(rawActiveGames)) {
+      if (game && typeof game === 'object' && !(game as any).won && !(game as any).gameOver) {
+        activeGames[mode] = game;
+      }
+    }
+
+    Diagnostics.log('validate_and_migrate', { colorSortUnlockedLevel, activeGamesCount: Object.keys(activeGames).length });
 
     return {
       version,

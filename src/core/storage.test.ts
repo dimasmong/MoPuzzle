@@ -55,4 +55,25 @@ describe('StorageService', () => {
     await Storage.clearActiveGame('merge');
     expect(Storage.getActiveGame('merge')).toBeNull();
   });
+
+  it('purges already-won or game-over states from active games during migration and save', async () => {
+    const legacyWithWon = {
+      version: 1,
+      colorSortUnlockedLevel: 2,
+      activeGames: {
+        colorsort: { level: 1, won: true, moves: 8 },
+        merge: { score: 2048, won: true },
+        slide: { moves: 10, won: false }
+      }
+    };
+
+    const sanitized = Storage.validateAndMigrate(legacyWithWon);
+    expect(sanitized.activeGames.colorsort).toBeUndefined();
+    expect(sanitized.activeGames.merge).toBeUndefined();
+    expect(sanitized.activeGames.slide).toBeDefined();
+
+    // Also testing saveActiveGame directly with won state
+    await Storage.saveActiveGame('colorsort', { level: 2, won: true });
+    expect(Storage.getActiveGame('colorsort')).toBeNull();
+  });
 });

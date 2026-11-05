@@ -24,7 +24,7 @@ export function renderAboutPage(): string {
           <div>
             <h3 style="font-size: 18px; font-weight: 800;">MoPuzzle</h3>
             <span style="font-size: 12px; font-weight: 700; background: var(--accent-color); color: #0D1B2A; padding: 2px 8px; border-radius: var(--radius-full);">
-              v1.0.2 (Release)
+              v1.0.3 (Release)
             </span>
           </div>
         </div>

@@ -17,6 +17,10 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] }
     },
     {
+      name: 'desktop-edge',
+      use: { ...devices['Desktop Edge'] }
+    },
+    {
       name: 'mobile-chrome',
       use: { ...devices['Pixel 7'] } // 412x915
     },

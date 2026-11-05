@@ -6,6 +6,7 @@ import { Storage } from '../core/storage';
 import { Stats } from '../core/stats';
 import { Achievements } from '../core/achievements';
 import { GameLauncher } from './GameLauncher';
+import { Diagnostics } from '../core/diagnostics';
 
 export class ColorSortScene extends Phaser.Scene {
   public engine!: ColorSortEngine;
@@ -32,6 +33,14 @@ export class ColorSortScene extends Phaser.Scene {
     if (!validSaved) {
       Storage.saveActiveGame('colorsort', this.engine.serialize());
     }
+
+    Diagnostics.log('colorsort_scene_init', {
+      requestedLevel,
+      unlockedLevel,
+      hadValidSaved: !!validSaved,
+      engineWon: this.engine.won,
+      engineMoves: this.engine.moves
+    });
   }
 
   public create(): void {
@@ -245,19 +254,59 @@ export class ColorSortScene extends Phaser.Scene {
   }
 
   public advanceToNextLevel(): boolean {
-    const nextLevel = this.engine.level + 1;
+    const prevLevel = this.engine ? this.engine.level : 1;
+    const nextLevel = prevLevel + 1;
     if (nextLevel > 30) {
+      Diagnostics.log('advance_to_next_level_capped', { prevLevel, nextLevel });
       return false;
+    }
+
+    // Stop and kill any in-flight tweens or animations immediately
+    if (this.tweens) {
+      this.tweens.killAll();
     }
     this.isAnimatingPour = false;
     this.selectedTubeIndex = null;
+
+    // Load next level puzzle (guaranteed fresh solvable state, moves = 0, won = false)
     this.engine.loadLevel(nextLevel);
-    Stats.recordGameStart('colorsort');
+
+    // Synchronize storage atomically: clear obsolete active game and record new level
+    Storage.clearActiveGame('colorsort');
     Storage.setUnlockedColorSortLevel(nextLevel);
     Storage.saveActiveGame('colorsort', this.engine.serialize());
+    Stats.recordGameStart('colorsort');
+
+    // Re-render board and emit clean state
     this.renderTubes();
     this.notifyState();
+
+    Diagnostics.log('advance_to_next_level_success', {
+      prevLevel,
+      nextLevel,
+      engineWon: this.engine.won,
+      engineMoves: this.engine.moves
+    });
+
     return true;
+  }
+
+  public shutdown(): void {
+    Diagnostics.log('colorsort_scene_shutdown', { level: this.engine?.level });
+    this.isAnimatingPour = false;
+    this.selectedTubeIndex = null;
+    if (this.tweens) {
+      this.tweens.killAll();
+    }
+    if (this.time) {
+      this.time.removeAllEvents();
+    }
+    this.tubeContainers.forEach(container => {
+      container.removeAllListeners();
+      container.destroy();
+    });
+    this.tubeContainers = [];
+    this.onStateChange = undefined;
   }
 
   public undoMove(): void {

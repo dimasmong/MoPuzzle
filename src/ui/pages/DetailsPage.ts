@@ -126,7 +126,8 @@ export function renderDetailsPage(mode: GameMode = 'merge'): string {
 }
 
 export function bindDetailsPageEvents(container: HTMLElement, mode: GameMode): void {
-  let selectedDifficulty: any = mode === 'slide' ? 4 : (mode === 'merge' ? 'classic' : 1);
+  const data = Storage.getData();
+  let selectedDifficulty: any = mode === 'slide' ? 4 : (mode === 'merge' ? 'classic' : (data.colorSortUnlockedLevel || 1));
 
   container.querySelector('#details-back-btn')?.addEventListener('click', () => {
     SoundManager.play('click');

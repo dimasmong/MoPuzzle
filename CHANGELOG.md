@@ -5,6 +5,27 @@ All notable changes to **MoPuzzle** will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2026-11-05
+
+### Fixed
+- **Desktop Chrome/Edge Color Sort Progression & Modal Loop**:
+  - Resolved desktop-specific issue where clicking "Next Level" on Desktop Chrome/Edge caused the "Puzzle Solved!" modal to reappear.
+  - Implemented event debouncing and click interception on `#modal-next-level` (`button.disabled = true; e.stopPropagation(); e.preventDefault()`), preventing double clicks and eliminating phantom click fall-through to underlying Phaser tubes.
+  - Added pointer event isolation on modal overlays to prevent background scene clicks during modal dismissal.
+  - Implemented scene lifecycle cleanup with `ColorSortScene.shutdown()`, properly destroying active containers, event listeners, and killing active tweens before advancing levels.
+  - Synchronized `Storage.clearActiveGame('colorsort')` and atomic level advancement so previous victory state cannot trigger obsolete modal popups.
+- **Save Data Sanitization & Compatibility for Existing Desktop Progress**:
+  - Updated `Storage.validateAndMigrate()` and `saveActiveGame()` to automatically detect and purge completed games (`won === true` or `gameOver === true`) from `activeGames`.
+  - Fixed `DetailsPage.ts` level resolution so clicking "Play" directly starts the user's latest unlocked level rather than defaulting to Level 1.
+  - Fully preserved player high scores, all-time statistics, settings, and achievement unlocks.
+- **PWA Service Worker Caching & Automatic Updates**:
+  - Re-architected `public/sw.js` caching strategy: navigation requests (`/`, `/index.html`) now use **Network-First** with offline cache fallback, guaranteeing desktop Chrome and Edge clients immediately fetch the freshest HTML and asset hashes rather than being trapped on older cached bundles.
+  - Upgraded cache name to `mopuzzle-cache-v1.0.3` and added automatic purge of obsolete caches on activation.
+  - Added service worker `SKIP_WAITING` messaging and `controllerchange` auto-reload handler in `main.ts` for clean, seamless updates.
+- **Diagnostics & Testing**:
+  - Added real-time diagnostics tracker `Diagnostics` (`window.__MOPUZZLE_DIAGNOSTICS__`) to monitor scene initialization, requested vs unlocked levels, engine victory state, and modal open/close lifecycles.
+  - Added comprehensive multi-level Playwright test suite (`e2e/colorsort-desktop-progression.spec.ts`) validating 10 progression scenarios across Desktop Chrome, Desktop Edge, Mobile Chrome, and iPhone 14.
+
 ## [1.0.2] - 2026-11-05
 
 ### Fixed
